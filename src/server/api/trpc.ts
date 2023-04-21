@@ -28,8 +28,10 @@ import { type Session } from "next-auth";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { getServerAuthSession } from "~/server/auth";
-import { prisma } from "~/server/db";
+import { getServerAuthSession } from "../auth";
+import { prisma } from "../db";
+import { qrService } from "../services/qrService";
+import { storageService } from "../services/storageService";
 
 type CreateContextOptions = {
   session: Session | null;
@@ -49,8 +51,12 @@ export const createInnerTRPCContext = (opts: CreateContextOptions) => {
   return {
     session: opts.session,
     prisma,
+    qr: qrService,
+    storage: storageService,
   };
 };
+
+export type TrpcContext = ReturnType<typeof createInnerTRPCContext>;
 
 /**
  * This is the actual context you will use in your router. It will be used to

@@ -1,14 +1,16 @@
 import type { GetServerSidePropsContext } from "next";
 import { PrismaAdapter } from "@next-auth/prisma-adapter";
+import type { Role } from "@prisma/client";
 import {
   getServerSession,
   type DefaultSession,
+  type DefaultUser,
   type NextAuthOptions,
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
-import { env } from "~/env.mjs";
-import { prisma } from "~/server/db";
+import { env } from "../env.mjs";
+import { prisma } from "./db";
 
 /**
  * Module augmentation for `next-auth` types.
@@ -22,14 +24,13 @@ declare module "next-auth" {
     user: {
       id: string;
       // ...other properties
-      // role: UserRole;
+      role: Role;
     } & DefaultSession["user"];
   }
 
-  // interface User {
-  //   // ...other properties
-  //   // role: UserRole;
-  // }
+  interface User extends DefaultUser {
+    role: Role;
+  }
 }
 
 /**
@@ -44,7 +45,7 @@ export const authOptions: NextAuthOptions = {
     session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        // session.user.role = user.role; <-- put other properties on the session here
+        session.user.role = user.role;
       }
 
       return session;
@@ -56,6 +57,7 @@ export const authOptions: NextAuthOptions = {
       clientId: env.DISCORD_CLIENT_ID,
       clientSecret: env.DISCORD_CLIENT_SECRET,
     }),
+
     /**
      * ...add more providers here
      *
@@ -66,6 +68,32 @@ export const authOptions: NextAuthOptions = {
      * @see https://next-auth.js.org/providers/github
      **/
   ],
+  pages: {
+    signOut: "auth/logout",
+  },
+  events: {
+    signIn: async ({ user, account, profile, isNewUser }) => {
+      console.log("User: ", user);
+      console.log("Account: ", account);
+      console.log("Profile: ", profile);
+      const isAdminLoginForFirstTime =
+        isNewUser &&
+        account &&
+        account.provider === "discord" &&
+        account.providerAccountId === env.ADMIN_ID;
+
+      if (isAdminLoginForFirstTime) {
+        await prisma.user.update({
+          where: {
+            id: user.id,
+          },
+          data: {
+            role: "ADMIN",
+          },
+        });
+      }
+    },
+  },
 };
 
 /**

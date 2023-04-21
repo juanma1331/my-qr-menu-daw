@@ -20,6 +20,13 @@ const config = {
     locales: ["en"],
     defaultLocale: "en",
   },
+  images: {
+    remotePatterns: [
+      {
+        hostname: "res.cloudinary.com",
+      },
+    ],
+  },
 
   // We run these separately in CI, so we can skip them here.
   eslint: { ignoreDuringBuilds: true },
