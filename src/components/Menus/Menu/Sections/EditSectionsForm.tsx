@@ -1,18 +1,19 @@
-import { Box, Group, ActionIcon, Title, Space } from "@mantine/core";
+import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
+import { ActionIcon, Box, Group, Space, Title } from "@mantine/core";
 import { zodResolver } from "@mantine/form";
-import { IconPlus, IconDeviceFloppy } from "@tabler/icons";
-import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
-import { createVersionWithSectionsInputSchema } from "../../../../server/procedures/menus/create-version-with-sections/create-version-with-sections.schema";
-import { RouterOutputs } from "../../../../utils/trpc";
+import { IconDeviceFloppy, IconPlus } from "@tabler/icons-react";
+
+import type { RouterOutputs } from "~/utils/api";
+import { createVersionWithSectionsInputSchema } from "~/server/procedures/create-version-with-sections/create-version-with-sections.schema";
 import EditSectionFormField from "./EditSectionFormField";
 import {
   EditSectionsFormProvider,
-  type EditSectionsFormValues,
   useEditSectionsForm,
+  type EditSectionsFormValues,
 } from "./EditSectionsFormContext";
 
 export type EditSectionFormProps = {
-  sections: RouterOutputs["menus"]["getLatestVersionSections"]["sections"];
+  sections: RouterOutputs["menus"]["getSectionsWithoutProducts"]["sections"];
   editMode: boolean;
   onEdit: (newSections: EditSectionsFormValues) => void;
 };
@@ -40,22 +41,24 @@ const EditSectionForm: React.FC<EditSectionFormProps> = ({
     });
   };
 
-  const fields = form.values.sections.map((_: any, index: number) => (
-    <Draggable
-      key={index}
-      index={index}
-      draggableId={index.toString()}
-      isDragDisabled={!editMode}
-    >
-      {(provided) => (
-        <EditSectionFormField
-          draggableProps={provided}
-          index={index}
-          editMode={editMode}
-        />
-      )}
-    </Draggable>
-  ));
+  const fields = form.values.sections.map(
+    (s: { name: string }, index: number) => (
+      <Draggable
+        key={index}
+        index={index}
+        draggableId={index.toString()}
+        isDragDisabled={!editMode}
+      >
+        {(provided) => (
+          <EditSectionFormField
+            draggableProps={provided}
+            index={index}
+            editMode={editMode}
+          />
+        )}
+      </Draggable>
+    ),
+  );
 
   return (
     <EditSectionsFormProvider form={form}>

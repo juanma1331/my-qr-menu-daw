@@ -1,12 +1,5 @@
-import {
-  Header,
-  MediaQuery,
-  Burger,
-  Text,
-  useMantineTheme,
-  Group,
-  Button,
-} from "@mantine/core";
+import { Burger, MediaQuery, useMantineTheme } from "@mantine/core";
+
 import AppHeader from "../../Shared/AppHeader";
 
 type MenuHeaderProps = {

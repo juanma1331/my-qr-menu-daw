@@ -1,14 +1,12 @@
 import type { PrismaClient } from "@prisma/client";
 
 import { protectedProcedure } from "~/server/api/trpc";
-import {
-  deleteOldVersionIfNotPublic,
-  getImageIdsFromMenuVersion,
-} from "../shared/shared.behaviour";
+import { deleteOldVersionIfNotPublic } from "../shared/behaviours/delete-old-version-if-not-public/delete-old-version-if-not-public.behaviour";
+import { getImageIdsFromMenuVersion } from "../shared/behaviours/get-image-ids-from-menu-version/get-image-ids-from-menu-version.behaviour";
+import { getLastVersionAndPublicVersion } from "../shared/behaviours/get-latest-version-and-public-version/get-latest-version-and-public-version.behaviour";
 import {
   createNewVersion,
   createNewVersionData,
-  getLastVersionAndPublicVersion,
 } from "./create-version-with-new-properties.behaviour";
 import {
   createVersionWithPropertiesInputSchema,

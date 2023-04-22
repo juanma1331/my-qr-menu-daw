@@ -42,15 +42,18 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
     );
 
   const editLatestVersionSectionsMutation =
-    trpc.menus.createVersionWithSections.useMutation({
+    api.menus.createVersionWithSections.useMutation({
       onSuccess: (newSectionsData) => {
-        utils.menus.getSectionsWithoutProducts.setData(newSectionsData, {
-          menuId,
-        });
+        utils.menus.getSectionsWithoutProducts.setData(
+          {
+            menuId,
+          },
+          newSectionsData,
+        );
       },
     });
 
-  const handleOnEdit = async ({ sections }: EditSectionsFormValues) => {
+  const handleOnEdit = ({ sections }: EditSectionsFormValues) => {
     const cachedSections = utils.menus.getSectionsWithoutProducts.getData({
       menuId,
     });

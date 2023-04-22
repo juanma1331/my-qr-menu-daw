@@ -1,7 +1,0 @@
-Tarea: Eliminar un campo innecesario en varias tablas 
-1. Modificar prisma schema 
-2. Ajustar los procedimientos 
-    1. Ajustar los esquemas. 
-    2. Ajustar el comportamiento. 
-    3. Ajustar el procedimiento. 
-3. Ajustar el cliente

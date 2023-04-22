@@ -1,7 +1,8 @@
-import { Group, Center, TextInput, ActionIcon } from "@mantine/core";
-import { IconGripVertical, IconTrash } from "@tabler/icons";
 import React from "react";
-import type { DraggableProvided } from "react-beautiful-dnd";
+import type { DraggableProvided } from "@hello-pangea/dnd";
+import { ActionIcon, Center, Group, TextInput } from "@mantine/core";
+import { IconGripVertical, IconTrash } from "@tabler/icons-react";
+
 import { useEditSectionsFormContext } from "./EditSectionsFormContext";
 
 type EditSectionFormFieldProps = {

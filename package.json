@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@emotion/react": "^11.10.6",
+    "@hello-pangea/dnd": "^16.2.0",
     "@hookform/resolvers": "^3.1.0",
     "@mantine/core": "^6.0.7",
     "@mantine/form": "^6.0.7",

@@ -48,7 +48,7 @@ export interface ISection {
 }
 
 export interface IProduct {
-  id: string;
+  id: number;
   name: string;
   description: string | null;
   price: number;

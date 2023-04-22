@@ -1,8 +1,8 @@
 import type { IMenuVersion, IProduct, ISection } from "../intertaces";
 
-export type MenuVersionQuery = Omit<
+export type MenuVersionQuery = Pick<
   IMenuVersion,
-  "menuId" | "menu" | "sections"
+  "id" | "title" | "subtitle" | "isPublic" | "bgImageId"
 > & {
   sections: SectionQuery[];
 };
@@ -11,7 +11,10 @@ export type SectionQuery = Pick<ISection, "name" | "position"> & {
   products: ProductQuery[];
 };
 
-export type ProductQuery = Omit<IProduct, "id" | "section" | "sectionId">;
+export type ProductQuery = Pick<
+  IProduct,
+  "name" | "description" | "price" | "imageId"
+>;
 
 export type CreatedMenuVersion = Pick<
   IMenuVersion,

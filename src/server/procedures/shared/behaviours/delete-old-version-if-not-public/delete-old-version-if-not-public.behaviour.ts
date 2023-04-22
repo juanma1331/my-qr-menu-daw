@@ -1,48 +1,23 @@
 import * as trpc from "@trpc/server";
 
 import type { TrpcContext } from "~/server/api/trpc";
-import type { IMenuVersion } from "../intertaces";
+import type { IMenuVersion, IProduct } from "~/server/procedures/intertaces";
 
-export type MenuVersion = Pick<IMenuVersion, "bgImageId"> & {
-  sections: {
-    products: { imageId: string }[];
-  }[];
+type MenuVersionQuery = Pick<IMenuVersion, "id" | "bgImageId" | "isPublic"> & {
+  sections: SectionQuery[];
 };
+
+type SectionQuery = {
+  products: ProductQuery[];
+};
+
+type ProductQuery = Pick<IProduct, "imageId">;
 
 export type DeleteOldVersionIfNotPublicParams = {
   prisma: TrpcContext["prisma"];
   storage: TrpcContext["storage"];
-  lastVersion: {
-    id: number;
-    bgImageId: string | null;
-    isPublic: boolean;
-    sections: {
-      products: {
-        imageId: string;
-      }[];
-    }[];
-  };
+  lastVersion: MenuVersionQuery;
   publicVersionImageIds: string[];
-};
-
-export const getImageIdsFromMenuVersion = (
-  version: MenuVersion | undefined,
-) => {
-  if (!version) return [];
-
-  const imagesIDs = new Set<string>();
-
-  for (const section of version.sections) {
-    for (const product of section.products) {
-      imagesIDs.add(product.imageId);
-    }
-  }
-
-  if (version.bgImageId) {
-    imagesIDs.add(version.bgImageId);
-  }
-
-  return Array.from(imagesIDs);
 };
 
 export const deleteOldVersionIfNotPublic = async (
@@ -78,7 +53,7 @@ export const deleteOldVersionIfNotPublic = async (
   } catch (e) {
     throw new trpc.TRPCError({
       code: "INTERNAL_SERVER_ERROR",
-      message: "Error deleting old version",
+      message: "Error deleting old version from db",
     });
   }
 };

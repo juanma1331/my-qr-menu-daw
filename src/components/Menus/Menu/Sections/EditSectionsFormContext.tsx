@@ -1,11 +1,11 @@
 import { createFormContext } from "@mantine/form";
-import { createVersionWithSectionsInputSchema } from "../../../../server/procedures/menus/create-version-with-sections/create-version-with-sections.schema";
+
+import type { RouterOutputs } from "~/utils/api";
 
 export type EditSectionsFormValues = {
-  sections: CreateVersionWithSectionsInputSchema["sections"];
+  sections: RouterOutputs["menus"]["createVersionWithSections"]["sections"];
 };
 
-// You can give context variables any name
 export const [
   EditSectionsFormProvider,
   useEditSectionsFormContext,
