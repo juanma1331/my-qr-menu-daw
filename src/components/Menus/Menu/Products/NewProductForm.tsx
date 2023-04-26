@@ -8,49 +8,50 @@ import {
   TextInput,
 } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
-import { IconFileUpload } from "@tabler/icons";
-import { ACCEPTED_IMAGE_TYPES } from "../../../../constants";
-import {
-  CreateVersionWithNewProductInput,
-  createVersionWithNewProductInputSchema,
-} from "../../../../server/procedures/menus/create-version-with-new-product/create-version-with-new-product.schema";
-import { RouterOutputs } from "../../../../utils/trpc";
-import { formatPrice } from "../../../../utils/utils";
+import { IconFileUpload } from "@tabler/icons-react";
+
+import type { RouterOutputs } from "~/utils/api";
+import { formatPrice } from "~/utils/client";
+import { ACCEPTED_IMAGE_TYPES } from "~/server/procedures/constants";
+import { createVersionWithNewProductFormSchema } from "~/server/procedures/create-version-with-new-product/create-version-with-new-product.schema";
 
 type NewProductFormProps = {
-  onSubmit: (product: NewProductInitialValues) => void;
-  sections: RouterOutputs["menus"]["getLatestVersionSections"]["sections"];
+  onSubmit: (product: NewProductFormValues) => void;
+  sections: RouterOutputs["menus"]["getSectionsWithoutProducts"]["sections"];
+  isLoading: boolean;
 };
 
-export type NewProductInitialValues = {
-  product: CreateVersionWithNewProductInput["product"];
+export type NewProductFormValues = {
+  sectionId: number;
+  product: {
+    name: string;
+    description: string | null;
+    price: number;
+    image: File | null;
+  };
 };
-
-const productSchema = createVersionWithNewProductInputSchema.omit({
-  menuId: true,
-  sectionId: true,
-});
 
 const NewProductForm: React.FC<NewProductFormProps> = ({
   onSubmit,
   sections,
+  isLoading,
 }) => {
-  const form = useForm<NewProductInitialValues>({
+  const form = useForm<NewProductFormValues>({
     initialValues: {
+      sectionId: 0,
       product: {
         name: "",
         description: "",
         price: 0,
-        sectionId: "",
         image: null,
       },
     },
-    validate: zodResolver(productSchema),
+    validate: zodResolver(createVersionWithNewProductFormSchema),
   });
 
   const selectData = sections.map((s) => ({
     label: s.name,
-    value: s.id,
+    value: s.id.toString(),
   }));
 
   return (
@@ -60,7 +61,14 @@ const NewProductForm: React.FC<NewProductFormProps> = ({
           label="Sección"
           placeholder="Elige la sección para tu producto"
           data={selectData}
-          {...form.getInputProps("product.sectionId")}
+          withAsterisk
+          onChange={(e) => {
+            if (!e) {
+              return;
+            }
+            form.setFieldValue("sectionId", parseInt(e)); // TODO check if this is correct
+          }}
+          error={form.errors.sectionId}
         />
         <TextInput
           label="Nombre"
@@ -91,7 +99,9 @@ const NewProductForm: React.FC<NewProductFormProps> = ({
           {...form.getInputProps("product.image")}
         />
 
-        <Button type="submit">Añadir</Button>
+        <Button type="submit" loading={isLoading}>
+          Añadir
+        </Button>
       </Stack>
     </Box>
   );

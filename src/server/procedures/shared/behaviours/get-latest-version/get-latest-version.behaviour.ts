@@ -28,12 +28,9 @@ export type GetLastVersionParams = {
   menuId: string;
 };
 
-export const getLastVersionAndPublicVersion = async (
+export const getLastMenuVersion = async (
   params: GetLastVersionParams,
-): Promise<{
-  lastVersion: MenuVersionQuery;
-  publicVersion: MenuVersionQuery | undefined;
-}> => {
+): Promise<MenuVersionQuery> => {
   const { prisma, menuId } = params;
   const versions = await prisma.menuVersion.findMany({
     where: { menuId },
@@ -74,7 +71,6 @@ export const getLastVersionAndPublicVersion = async (
     });
   }
 
-  const publicVersion = versions.find((version) => version.isPublic);
   const lastVersion = versions[0];
 
   if (!lastVersion) {
@@ -84,8 +80,5 @@ export const getLastVersionAndPublicVersion = async (
     });
   }
 
-  return {
-    lastVersion,
-    publicVersion,
-  };
+  return lastVersion;
 };

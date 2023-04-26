@@ -5,7 +5,7 @@ import type { TrpcContext } from "~/server/api/trpc";
 import type {
   ProductQuery,
   SectionQuery,
-} from "../shared/behaviours/get-latest-version-and-public-version/get-latest-version-and-public-version.behaviour";
+} from "../shared/behaviours/get-latest-version/get-latest-version.behaviour";
 import type {
   MenuVersionForCreation,
   SectionFromCreatedVersion,

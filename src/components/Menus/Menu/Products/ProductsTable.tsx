@@ -1,20 +1,26 @@
-import { RouterOutputs } from "../../../../utils/trpc";
-import NextImage from "next/image";
-import { Table, useMantineTheme, Text } from "@mantine/core";
-import { formatPrice } from "../../../../utils/utils";
+import { ActionIcon, Table, Text, useMantineTheme } from "@mantine/core";
+import { IconTrash } from "@tabler/icons-react";
+import { CldImage } from "next-cloudinary";
+
+import type { RouterOutputs } from "~/utils/api";
+import { formatPrice } from "~/utils/client";
 
 type ProductsTableProps = {
-  products: RouterOutputs["menus"]["getLatestVersionProducts"]["products"];
+  products: RouterOutputs["menus"]["getProductsWithSections"]["products"];
+  onDelete: (productId: number) => void;
 };
 
-const ProductsTable: React.FC<ProductsTableProps> = ({ products }) => {
+const ProductsTable: React.FC<ProductsTableProps> = ({
+  products,
+  onDelete,
+}) => {
   const theme = useMantineTheme();
 
   const rows = products.map((product) => (
     <tr key={product.id}>
       <td>
-        <NextImage
-          src={product.image}
+        <CldImage
+          src={product.imageId}
           width={50}
           height={50}
           style={{ borderRadius: theme.radius.sm }}
@@ -27,6 +33,11 @@ const ProductsTable: React.FC<ProductsTableProps> = ({ products }) => {
         <Text lineClamp={1}>{product.description ?? "Sin descripción"}</Text>
       </td>
       <td>{product.section.name}</td>
+      <td>
+        <ActionIcon onClick={() => onDelete(product.id)}>
+          <IconTrash size={16} />
+        </ActionIcon>
+      </td>
     </tr>
   ));
 
@@ -39,6 +50,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({ products }) => {
           <th>Precio</th>
           <th>Descripción</th>
           <th>Sección</th>
+          <th>Acciones</th>
         </tr>
       </thead>
       <tbody>{rows}</tbody>

@@ -18,6 +18,13 @@ export type CreateNewVersionParams = {
   prisma: TrpcContext["prisma"];
 };
 
+export type DeleteOldVersionBgImageFromStorageIfNeeded = {
+  storage: TrpcContext["storage"];
+  input: RouterInputs["menus"]["createVersionWithNewProperties"];
+  imageId: string | null;
+  isLastVersionPublic: boolean;
+};
+
 export const createNewVersionData = async (
   params: CreateNewVersionDataParams,
 ) => {
@@ -81,5 +88,27 @@ export const createNewVersion = async (
       code: "INTERNAL_SERVER_ERROR",
       message: "Error creating new version",
     });
+  }
+};
+
+export const deleteOldVersionBgImageFromStorageIfNeeded = async (
+  params: DeleteOldVersionBgImageFromStorageIfNeeded,
+) => {
+  const { storage, input, imageId, isLastVersionPublic } = params;
+
+  if (isLastVersionPublic) return;
+
+  const shouldDelete =
+    input.properties.deleteImage || input.properties.image !== null;
+
+  if (shouldDelete && imageId) {
+    try {
+      await storage.deleteImage(imageId);
+    } catch (e) {
+      throw new trpc.TRPCError({
+        code: "INTERNAL_SERVER_ERROR",
+        message: "Error deleting image",
+      });
+    }
   }
 };

@@ -2,11 +2,11 @@ import type { PrismaClient } from "@prisma/client";
 
 import { protectedProcedure } from "~/server/api/trpc";
 import { deleteOldVersionIfNotPublic } from "../shared/behaviours/delete-old-version-if-not-public/delete-old-version-if-not-public.behaviour";
-import { getImageIdsFromMenuVersion } from "../shared/behaviours/get-image-ids-from-menu-version/get-image-ids-from-menu-version.behaviour";
-import { getLastVersionAndPublicVersion } from "../shared/behaviours/get-latest-version-and-public-version/get-latest-version-and-public-version.behaviour";
+import { getLastMenuVersion } from "../shared/behaviours/get-latest-version/get-latest-version.behaviour";
 import {
   createNewVersion,
   createNewVersionData,
+  deleteOldVersionBgImageFromStorageIfNeeded,
 } from "./create-version-with-new-properties.behaviour";
 import {
   createVersionWithPropertiesInputSchema,
@@ -17,14 +17,10 @@ export const createVersionWithPropertiesProcedure = protectedProcedure
   .input(createVersionWithPropertiesInputSchema)
   .output(createVersionWithPropertiesOutputSchema)
   .mutation(async ({ ctx, input }) => {
-    const { lastVersion, publicVersion } = await getLastVersionAndPublicVersion(
-      {
-        prisma: ctx.prisma,
-        menuId: input.menuId,
-      },
-    );
-
-    const publicVersionImageIds = getImageIdsFromMenuVersion(publicVersion);
+    const lastVersion = await getLastMenuVersion({
+      prisma: ctx.prisma,
+      menuId: input.menuId,
+    });
 
     const newVersionData = await createNewVersionData({
       lastVersion,
@@ -40,11 +36,17 @@ export const createVersionWithPropertiesProcedure = protectedProcedure
 
       await deleteOldVersionIfNotPublic({
         lastVersion,
-        publicVersionImageIds,
         prisma: ctx.prisma,
-        storage: ctx.storage,
       });
+
       return createdVersion;
+    });
+
+    await deleteOldVersionBgImageFromStorageIfNeeded({
+      storage: ctx.storage,
+      input,
+      imageId: lastVersion.bgImageId,
+      isLastVersionPublic: lastVersion.isPublic,
     });
 
     return {

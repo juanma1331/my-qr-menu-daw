@@ -14,12 +14,10 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-
-
 model Menu {
     id            String        @id() @default(cuid())
     createdAt     DateTime      @default(now())
-    qrId        String
+    qrId        String 
     ownerId       String
     owner         User          @relation(fields: [ownerId], references: [id], onDelete: Cascade)
     versions      MenuVersion[]
@@ -31,7 +29,7 @@ model MenuVersion {
     subtitle       String?
     isPublic       Boolean   @default(false)
     createdAt      DateTime  @default(now())
-    bgImageId     String?
+    bgImageId     String? 
     menu           Menu      @relation(fields: [menuId], references: [id], onDelete: Cascade)
     menuId         String
     sections       Section[]
@@ -48,11 +46,11 @@ model Section {
 
 model Product {
     id           Int    @id @default(autoincrement())
-    name         String
+    name         String 
     description  String?
     price        Int
-    imageId     String
-    section      Section   @relation(fields: [sectionId], references: [id])
+    imageId     String 
+    section      Section   @relation(fields: [sectionId], references: [id], onDelete: Cascade)
     sectionId    Int
 }
 

@@ -3,7 +3,7 @@ import type { PrismaClient } from "@prisma/client";
 import { protectedProcedure } from "~/server/api/trpc";
 import { deleteOldVersionIfNotPublic } from "../shared/behaviours/delete-old-version-if-not-public/delete-old-version-if-not-public.behaviour";
 import { getImageIdsFromMenuVersion } from "../shared/behaviours/get-image-ids-from-menu-version/get-image-ids-from-menu-version.behaviour";
-import { getLastVersionAndPublicVersion } from "../shared/behaviours/get-latest-version-and-public-version/get-latest-version-and-public-version.behaviour";
+import { getLastMenuVersion } from "../shared/behaviours/get-latest-version/get-latest-version.behaviour";
 import {
   createNewVersion,
   getProductsFromVersionSections,
@@ -18,12 +18,10 @@ export const createVersionWithSectionsProcedure = protectedProcedure
   .input(createVersionWithSectionsInputSchema)
   .output(createVersionWithSectionsOutputSchema)
   .mutation(async ({ ctx, input }) => {
-    const { lastVersion, publicVersion } = await getLastVersionAndPublicVersion(
-      {
-        prisma: ctx.prisma,
-        menuId: input.menuId,
-      },
-    );
+    const lastVersion = await getLastMenuVersion({
+      prisma: ctx.prisma,
+      menuId: input.menuId,
+    });
 
     const versionProducts = getProductsFromVersionSections(
       lastVersion.sections,
@@ -33,8 +31,6 @@ export const createVersionWithSectionsProcedure = protectedProcedure
       sections: input.sections,
       products: versionProducts,
     });
-
-    const publicVersionImageIds = getImageIdsFromMenuVersion(publicVersion);
 
     const createdVersion = await ctx.prisma.$transaction(async (prisma) => {
       const version = await createNewVersion({
@@ -50,9 +46,7 @@ export const createVersionWithSectionsProcedure = protectedProcedure
 
       await deleteOldVersionIfNotPublic({
         lastVersion,
-        publicVersionImageIds,
         prisma: ctx.prisma,
-        storage: ctx.storage,
       });
       return version;
     });

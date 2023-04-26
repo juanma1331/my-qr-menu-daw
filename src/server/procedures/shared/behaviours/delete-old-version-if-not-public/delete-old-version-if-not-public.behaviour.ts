@@ -15,38 +15,17 @@ type ProductQuery = Pick<IProduct, "imageId">;
 
 export type DeleteOldVersionIfNotPublicParams = {
   prisma: TrpcContext["prisma"];
-  storage: TrpcContext["storage"];
   lastVersion: MenuVersionQuery;
-  publicVersionImageIds: string[];
 };
 
 export const deleteOldVersionIfNotPublic = async (
   params: DeleteOldVersionIfNotPublicParams,
 ): Promise<void> => {
-  const { prisma, storage, lastVersion, publicVersionImageIds } = params;
+  const { prisma, lastVersion } = params;
 
   if (lastVersion.isPublic) return;
 
-  const imageIdsToDelete = [];
-  for (const { products } of lastVersion.sections) {
-    for (const { imageId } of products) {
-      if (imageId) {
-        imageIdsToDelete.push(imageId);
-      }
-    }
-  }
-
-  if (lastVersion.bgImageId) imageIdsToDelete.push(lastVersion.bgImageId);
-
   try {
-    await Promise.all(
-      imageIdsToDelete.map((id) => {
-        if (!publicVersionImageIds.includes(id)) {
-          return storage.deleteImage(id);
-        }
-      }),
-    );
-
     await prisma.menuVersion.delete({
       where: { id: lastVersion.id },
     });
