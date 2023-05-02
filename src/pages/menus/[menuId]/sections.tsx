@@ -100,7 +100,8 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
           <Group position="apart" style={{ width: "100%" }}>
             <PublishButton
               published={data.isPublic}
-              onClick={() => console.log("publishing")}
+              menuId={menuId}
+              onPublishError={(error) => console.log(error)}
             />
             <Switch
               label="Editar"
