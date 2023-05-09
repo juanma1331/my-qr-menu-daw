@@ -1,33 +1,32 @@
-import { useState } from "react";
-import type { NextPage } from "next";
-import Link from "next/link";
+import { useState, type ReactElement } from "react";
 import { useRouter } from "next/router";
-import {
-  Button,
-  Container,
-  Flex,
-  Loader,
-  Modal,
-  Stack,
-  Text,
-} from "@mantine/core";
+import { Box, Flex, Stack, Text } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 import { openConfirmModal } from "@mantine/modals";
+import { IconPlus } from "@tabler/icons-react";
 
 import { api } from "~/utils/api";
-import NewMenuForm, { type NewMenu } from "~/components/Menus/NewMenuForm";
+import MenusLayout from "~/components/Layout/MenusLayout";
+import Button from "~/components/Shared/Button";
+import Modal from "~/components/Shared/Modal";
+import PageEmptyList from "~/components/Shared/Page/PageEmptyList";
+import GenericPageError from "~/components/Shared/Page/PageError/GenericPageError";
+import PageLoader from "~/components/Shared/Page/PageLoader";
+import PageSectionTitle from "~/components/Shared/Page/PageSectionTitle";
+import { openDeleteConfirmModal } from "~/components/confirmation-modals";
+import { notificateError, notificateSuccess } from "~/components/notifications";
+import NewMenuForm, {
+  type NewMenu,
+} from "~/components/pages/MenusPage/NewMenuForm";
 import type { WithAuthentication } from "../../components/Auth/AuthGuard";
-import Menus from "../../components/Menus/Menus";
-import MenusHeader from "../../components/Menus/MenusHeader";
-import PageCenter from "../../components/Shared/PageCenter";
-import PageError from "../../components/Shared/PageError";
+import MenusGrid from "../../components/pages/MenusPage/Grid/MenusGrid";
+import type { NextPageWithLayout } from "../_app";
 
-const MenusPage: WithAuthentication<NextPage> = () => {
+const MenusPage: WithAuthentication<NextPageWithLayout> = () => {
   const router = useRouter();
   const [opened, { open, close }] = useDisclosure(false);
-  const utils = api.useContext();
-  const [creationLimitReached, setCreationLimitReached] = useState(false);
   const [deletionError, setDeletionError] = useState(false);
+  const [creationError, setCreationError] = useState(false);
   const {
     data,
     refetch,
@@ -41,36 +40,36 @@ const MenusPage: WithAuthentication<NextPage> = () => {
         if (data.creationStatus === "allowed") {
           await router.push(`/menus/${data.menuId}`);
         } else {
-          setCreationLimitReached(true);
+          close();
+          notificateError({
+            title: "Límite alcanzado",
+            message:
+              "No se pudo crear el menú debido a que alcanzaste el límite de menús permitidos.",
+          });
         }
       },
-      onError: (error) => {
-        console.log(error);
+      onError: () => {
+        setCreationError(true);
       },
     });
 
   const deleteMenuMutation = api.menus.deleteMenu.useMutation({
     onSuccess: async () => {
       await refetch();
+      notificateSuccess({
+        title: "Menú borrado",
+        message: "El menú fue borrado exitosamente.",
+      });
+    },
+    onError: () => {
+      setDeletionError(true);
     },
   });
-
   const openDeleteModal = (id: string) => {
-    return openConfirmModal({
-      centered: true,
+    return openDeleteConfirmModal({
       title: "Borrar Menú",
-      children: (
-        <Text size="sm">
-          Si borra el menú perderá toda la información relative a ese menú.
-        </Text>
-      ),
-      labels: { confirm: "Borrar", cancel: "Cancelar" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
-        deleteMenuMutation.mutate({
-          menuId: id,
-        });
-      },
+      body: "Si borra el menú perderá toda la información relativa a ese menú.",
+      onConfirmDelete: () => deleteMenuMutation.mutate({ menuId: id }),
     });
   };
 
@@ -83,73 +82,61 @@ const MenusPage: WithAuthentication<NextPage> = () => {
     createMenuAndVersionMutation.isLoading ||
     deleteMenuMutation.isLoading
   )
-    return (
-      <>
-        <MenusHeader />
+    return <PageLoader />;
 
-        <PageCenter h="100vh">
-          <Loader />
-        </PageCenter>
-      </>
-    );
-
-  if (menusError || !data)
+  if (menusError)
     return (
-      <>
-        <MenusHeader />
-        <PageCenter h="100vh">
-          <PageError>
-            <Stack>
-              <Text>
-                Lamentablemente no pudimos obtener tus menús debido a un
-                problema interno
-              </Text>
-              <Button component={Link} href="/menus">
-                Intentar de nuevo
-              </Button>
-            </Stack>
-          </PageError>
-        </PageCenter>
-      </>
+      <GenericPageError
+        error="Lamentablemente no pudimos obtener tus menús debido a un problema
+      interno"
+      />
     );
 
   if (deletionError) {
     return (
-      <>
-        <MenusHeader />
-        <PageCenter h="100vh">
-          <PageError>
-            <Stack>
-              <Text>
-                Lamentablemente no pudimos borrar tu menús debido a un problema
-                interno
-              </Text>
-              <Button onClick={() => console.log("go back or try again")}>
-                Volver
-              </Button>
-            </Stack>
-          </PageError>
-        </PageCenter>
-      </>
+      <GenericPageError
+        error="Lamentablemente no pudimos borrar tu menú debido a un problema
+    interno"
+      />
+    );
+  }
+
+  if (creationError) {
+    return (
+      <GenericPageError error="Lamentablemente no pudimos crear tu menú debido a un problema interno" />
     );
   }
 
   return (
     <>
-      <MenusHeader />
-      <Container mt="sm">
-        <Stack>
-          <Flex justify="flex-end">
-            <Button onClick={open}>Nuevo Menú</Button>
-          </Flex>
-          <Menus
-            menus={data.menus}
-            onRemove={(menuId: string) => {
-              openDeleteModal(menuId);
-            }}
-          />
-        </Stack>
-      </Container>
+      <Stack h="100%">
+        <Flex justify="flex-end">
+          <Button onClick={open} rightIcon={<IconPlus size={16} />}>
+            Nuevo Menú
+          </Button>
+        </Flex>
+
+        <Box h="100%">
+          <PageSectionTitle>Mis Menús</PageSectionTitle>
+          {data.menus.length > 0 ? (
+            <MenusGrid
+              menus={data.menus}
+              onRemove={(menuId: string) => {
+                openDeleteModal(menuId);
+              }}
+            />
+          ) : (
+            <PageEmptyList
+              text="Actualmente no tienes ningún menú. "
+              action={
+                <Button size="xs" variant="outline" onClick={open}>
+                  Nuevo Menú
+                </Button>
+              }
+            />
+          )}
+        </Box>
+      </Stack>
 
       <Modal opened={opened} onClose={close} title="Nuevo Menú">
         <NewMenuForm onNew={handleOnNewMenu} />
@@ -158,9 +145,13 @@ const MenusPage: WithAuthentication<NextPage> = () => {
   );
 };
 
+MenusPage.getLayout = (page: ReactElement) => {
+  return <MenusLayout>{page}</MenusLayout>;
+};
+
 MenusPage.auth = {
-  role: "user",
-  loading: <div>Loading Session</div>,
+  role: "USER",
+  loading: <PageLoader />,
 };
 
 export default MenusPage;

@@ -32,6 +32,7 @@ import { getServerAuthSession } from "../auth";
 import { prisma } from "../db";
 import { qrService } from "../services/qrService";
 import { storageService } from "../services/storageService";
+import type { IRole } from "./../procedures/intertaces";
 
 type CreateContextOptions = {
   session: Session | null;
@@ -75,19 +76,30 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   });
 };
 
-const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
-});
+interface Meta {
+  authRequired: boolean;
+  role?: IRole;
+}
+
+const t = initTRPC
+  .context<typeof createTRPCContext>()
+  .meta<Meta>()
+  .create({
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+      return {
+        ...shape,
+        data: {
+          ...shape.data,
+          zodError:
+            error.cause instanceof ZodError ? error.cause.flatten() : null,
+        },
+      };
+    },
+    defaultMeta: {
+      authRequired: false,
+    },
+  });
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -116,10 +128,15 @@ export const publicProcedure = t.procedure;
  * Reusable middleware that enforces users are logged in before running the
  * procedure.
  */
-const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
+const enforceUserIsAuthed = t.middleware(({ meta, ctx, next }) => {
   if (!ctx.session || !ctx.session.user) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
+  if (meta?.role && ctx.session.user.role !== meta?.role) {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+
   return next({
     ctx: {
       // infers the `session` as non-nullable
@@ -137,4 +154,12 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed).meta({
+  authRequired: true,
+  role: "USER",
+});
+
+export const adminProcedure = protectedProcedure.meta({
+  authRequired: true, // This should be inherited from protectedProcedure
+  role: "ADMIN",
+});

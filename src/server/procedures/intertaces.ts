@@ -1,20 +1,13 @@
-export type Role = "ADMIN" | "USER";
-
-export interface IUserRole {
-  id: number;
-  userId: string;
-  user: IUser;
-  role: Role;
-}
+export type IRole = "ADMIN" | "USER";
 
 export interface IUser {
   id: string;
-  name?: string;
-  email: string;
-  emailVerified?: Date;
-  image?: string;
+  name: string | null;
+  email: string | null;
+  emailVerified: Date | null;
+  image: string | null;
   menuCreationLimit: number;
-  roles: IUserRole[];
+  role: IRole;
 }
 
 export interface IMenu {

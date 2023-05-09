@@ -3,9 +3,11 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import type { Role } from "@prisma/client";
 import {
   getServerSession,
+  type Account,
   type DefaultSession,
   type DefaultUser,
   type NextAuthOptions,
+  type User,
 } from "next-auth";
 import DiscordProvider from "next-auth/providers/discord";
 
@@ -72,29 +74,41 @@ export const authOptions: NextAuthOptions = {
     signOut: "auth/logout",
   },
   events: {
-    signIn: async ({ user, account, profile, isNewUser }) => {
-      console.log("User: ", user);
-      console.log("Account: ", account);
-      console.log("Profile: ", profile);
-      const isAdminLoginForFirstTime =
-        isNewUser &&
-        account &&
-        account.provider === "discord" &&
-        account.providerAccountId === env.ADMIN_ID;
-
-      if (isAdminLoginForFirstTime) {
-        await prisma.user.update({
-          where: {
-            id: user.id,
-          },
-          data: {
-            role: "ADMIN",
-          },
-        });
-      }
+    signIn: async ({ user, account, isNewUser }) => {
+      await addAdminRoleToUserOnFirstSignIn({ user, account, isNewUser });
     },
   },
 };
+
+// Auth utils
+type AddAdminRoleToUserOnFirstSignInParams = {
+  user: User;
+  account: Account | null;
+  isNewUser: boolean | undefined;
+};
+async function addAdminRoleToUserOnFirstSignIn({
+  user,
+  account,
+  isNewUser,
+}: AddAdminRoleToUserOnFirstSignInParams) {
+  const isAdminLoginForFirstTime =
+    isNewUser &&
+    account &&
+    account.provider === "discord" &&
+    // account.providerAccountId === "paco";
+    account.providerAccountId === env.ADMIN_ID;
+
+  if (isAdminLoginForFirstTime) {
+    await prisma.user.update({
+      where: {
+        id: user.id,
+      },
+      data: {
+        role: "ADMIN",
+      },
+    });
+  }
+}
 
 /**
  * Wrapper for `getServerSession` so that you don't need to import the

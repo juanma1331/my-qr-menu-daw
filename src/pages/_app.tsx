@@ -1,28 +1,23 @@
-import type { ReactElement } from "react";
+import { type ReactElement } from "react";
 import type { NextPage } from "next";
 import { type AppType } from "next/app";
-import { Inter as FontSans } from "next/font/google";
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
+import { Notifications } from "@mantine/notifications";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
-import { ReactQueryDevtools } from "react-query-devtools";
 
 import { api } from "~/utils/api";
 import AuthGuard, {
   type WithAuthentication,
 } from "~/components/Auth/AuthGuard";
+import { theme } from "~/styles/theme";
 
 export type NextPageWithLayout = NextPage & {
   getLayout?: (page: ReactElement) => ReactElement;
 };
 
 export type NextPageWithAuthentication = WithAuthentication<NextPageWithLayout>;
-
-const fontSans = FontSans({
-  subsets: ["latin"],
-  variable: "--font-sans",
-});
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -36,17 +31,10 @@ const MyApp: AppType<{ session: Session | null }> = ({
 
   return (
     <>
-      <style jsx global>
-        {`
-          :root {
-            --font-sans: ${fontSans.style.fontFamily};
-          }
-        `}
-      </style>
-      <MantineProvider withGlobalStyles withNormalizeCSS>
+      <MantineProvider withGlobalStyles withNormalizeCSS theme={theme}>
         <ModalsProvider>
+          <Notifications />
           <SessionProvider session={session}>
-            <ReactQueryDevtools initialIsOpen={true} />
             {C.auth ? <AuthGuard auth={C.auth}>{layout}</AuthGuard> : layout}
           </SessionProvider>
         </ModalsProvider>

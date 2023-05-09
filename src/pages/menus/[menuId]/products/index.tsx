@@ -1,34 +1,27 @@
-import type { ReactElement } from "react";
-import Link from "next/link";
+import { useState, type ReactElement } from "react";
 import { useRouter } from "next/router";
-import {
-  ActionIcon,
-  Button,
-  Flex,
-  Group,
-  Loader,
-  Paper,
-  Space,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
-import { openConfirmModal } from "@mantine/modals";
+import { Group, Paper, Space } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 
 import { api } from "~/utils/api";
+import Button from "~/components/Shared/Button";
+import GenericPageError from "~/components/Shared/Page/PageError/GenericPageError";
+import PageLoader from "~/components/Shared/Page/PageLoader";
+import PageSectionTitle from "~/components/Shared/Page/PageSectionTitle";
+import { openDeleteConfirmModal } from "~/components/confirmation-modals";
+import { notificateSuccess } from "~/components/notifications";
+import EmptyProductsTable from "~/components/pages/ProductsPage/EmptyProductsTable";
 import type { WithAuthentication } from "../../../../components/Auth/AuthGuard";
-import MenuLayout from "../../../../components/Layout/MenuLayout";
-import ProductsTable from "../../../../components/Menus/Menu/Products/ProductsTable";
-import PageCenter from "../../../../components/Shared/PageCenter";
-import PageError from "../../../../components/Shared/PageError";
+import MenuLayout from "../../../../components/Layout/MenuLayout/MenuLayout";
 import PublishButton from "../../../../components/Shared/PublishButton";
+import ProductsTable from "../../../../components/pages/ProductsPage/ProductsTable/ProductsTable";
 import type { NextPageWithLayout } from "../../../_app";
 
 const ProductsPage: WithAuthentication<NextPageWithLayout> = () => {
   const router = useRouter();
   const menuId = router.query.menuId as string;
   const utils = api.useContext();
+  const [publishError, setPublishError] = useState(false);
 
   const { data, isLoading, isError } =
     api.menus.getProductsWithSections.useQuery({ menuId });
@@ -36,28 +29,24 @@ const ProductsPage: WithAuthentication<NextPageWithLayout> = () => {
   const createVersionWithoutDeletedProductMutation =
     api.menus.createVersionWithoutDeletedProduct.useMutation({
       onSuccess: async () => {
-        await utils.menus.getProductsWithSections.invalidate();
-
-        await utils.menus.getMenusInfo.invalidate();
+        await utils.menus.invalidate();
 
         await router.push(`/menus/${menuId}/products`);
+
+        notificateSuccess({
+          title: "Producto borrado",
+          message: "El producto fue borrado exitosamente",
+        });
       },
       onError: (e) => console.log(e),
     });
 
+  //  Está seguro que desea borrar este producto? Esta acción no se puede deshacer. Borrar Producto
   const openDeleteModal = (id: number) => {
-    return openConfirmModal({
-      centered: true,
-      title: "Borrar Menú",
-      children: (
-        <Text size="sm">
-          Está seguro que desea borrar este producto? Esta acción no se puede
-          deshacer.
-        </Text>
-      ),
-      labels: { confirm: "Borrar", cancel: "Cancelar" },
-      confirmProps: { color: "red" },
-      onConfirm: () => {
+    return openDeleteConfirmModal({
+      title: "Borrar Producto",
+      body: "Está seguro que desea borrar este producto? Esta acción no se puede deshacer",
+      onConfirmDelete: () => {
         createVersionWithoutDeletedProductMutation.mutate({
           menuId,
           productId: id,
@@ -67,69 +56,65 @@ const ProductsPage: WithAuthentication<NextPageWithLayout> = () => {
   };
 
   if (isLoading || createVersionWithoutDeletedProductMutation.isLoading)
-    return (
-      <PageCenter h="100vh">
-        <Loader />
-      </PageCenter>
-    );
+    return <PageLoader />;
 
   if (isError) {
     return (
-      <PageCenter h="100vh">
-        <PageError>
-          <Stack>
-            <Text>
-              Lamentablemente no pudimos obtener los productos del menú debido a
-              un problema interno
-            </Text>
-            <Button component={Link} href="/menus">
-              Volver
-            </Button>
-          </Stack>
-        </PageError>
-      </PageCenter>
+      <GenericPageError
+        error="Lamentablemente no pudimos obtener los productos del menú debido a
+      un problema interno"
+      />
+    );
+  }
+
+  if (publishError) {
+    return (
+      <GenericPageError error="Lamentablemente no pudimos publicar el menú debido a un problema interno" />
     );
   }
 
   return (
-    <>
-      <Paper p="sm" shadow="sm">
-        <Flex justify="end">
-          <Group position="apart" style={{ width: "100%" }}>
-            <PublishButton
-              published={data.isPublic}
-              menuId={menuId}
-              onPublishError={(error) => console.log(error)}
-            />
-          </Group>
-        </Flex>
-      </Paper>
+    <Paper p="sm" pb="lg" shadow="sm">
+      <Group position="apart">
+        <PageSectionTitle order={2}>Productos</PageSectionTitle>
+        <PublishButton
+          published={data.isPublic}
+          menuId={menuId}
+          onInternalError={() => setPublishError(true)}
+        />
+      </Group>
 
-      <Space h="sm" />
+      <Space h="lg" />
 
-      <Paper p="sm" pb="lg" shadow="sm">
-        <Group position="apart">
-          <Title order={2}>Productos</Title>
+      <Group position="center">
+        <Button
+          vr="neutral"
+          size="sm"
+          rightIcon={<IconPlus size={16} />}
+          onClick={async () =>
+            await router.push(`/menus/${menuId}/products/new`)
+          }
+        >
+          Nuevo Producto
+        </Button>
+      </Group>
 
-          <ActionIcon
-            color="blue"
-            component={Link}
-            href={`/menus/${menuId}/products/new`}
-          >
-            <IconPlus color="gray" size={20} />
-          </ActionIcon>
-        </Group>
+      <Space h="lg" />
 
-        <Space h="xs" />
-
+      {data.products.length > 0 ? (
         <ProductsTable
           products={data.products}
           onDelete={(productId: number) => {
             openDeleteModal(productId);
           }}
+          onEdit={async (productId: number) => {
+            await router.push(`/menus/${menuId}/products/${productId}/edit`);
+          }}
         />
-      </Paper>
-    </>
+      ) : (
+        <EmptyProductsTable />
+      )}
+    </Paper>
   );
 };
 
@@ -138,7 +123,7 @@ ProductsPage.getLayout = (page: ReactElement) => {
 };
 
 ProductsPage.auth = {
-  role: "user",
+  role: "USER",
   loading: <div>Loading Session...</div>,
 };
 

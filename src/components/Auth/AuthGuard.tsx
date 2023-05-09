@@ -1,9 +1,11 @@
-import { useEffect, type ReactElement } from "react";
-import { useRouter } from "next/router";
+import { type ReactElement } from "react";
 import { useSession } from "next-auth/react";
 
+import type { IRole } from "~/server/procedures/intertaces";
+import UnAuthorizedPageError from "../Shared/Page/PageError/UnAuthorizedPageError";
+
 type AuthProps = {
-  role: string;
+  role: IRole;
   loading: ReactElement;
 };
 
@@ -13,20 +15,22 @@ export type WithAuthentication<P = unknown> = P & {
 
 type AuthGuardProps = {
   children: ReactElement;
-  auth: AuthProps; // Implementar roles
+  auth: AuthProps;
 };
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children, auth }) => {
   const { data: session } = useSession();
-  const router = useRouter();
 
-  const user = !!session?.user;
+  const hasUser = !!session?.user;
+  const isValidRole = session?.user?.role === auth.role;
 
-  useEffect(() => {
-    if (!user) void router.push("/auth/login");
-  }, [user, router]);
+  if (hasUser && isValidRole) return children;
 
-  if (user) return children;
+  if (!hasUser || !isValidRole) {
+    return (
+      <UnAuthorizedPageError error="Lo sentimos, no tienes acceso a este sitio" />
+    );
+  }
 
   return auth.loading;
 };

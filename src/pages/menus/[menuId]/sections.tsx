@@ -1,33 +1,25 @@
 import { useState, type ReactElement } from "react";
-import Link from "next/link";
 import { useRouter } from "next/router";
-import {
-  Button,
-  Flex,
-  Group,
-  Loader,
-  Paper,
-  Space,
-  Stack,
-  Switch,
-  Text,
-} from "@mantine/core";
+import { Group, Paper, Space } from "@mantine/core";
 
 import { api } from "~/utils/api";
+import GenericPageError from "~/components/Shared/Page/PageError/GenericPageError";
+import PageLoader from "~/components/Shared/Page/PageLoader";
+import PageSectionTitle from "~/components/Shared/Page/PageSectionTitle";
+import PublishButton from "~/components/Shared/PublishButton";
+import { notificateSuccess } from "~/components/notifications";
+import type { EditSectionsFormValues } from "~/components/pages/SectionsPage/EditSectionsFormContext";
+import EmptySections from "~/components/pages/SectionsPage/EmptySections";
 import type { WithAuthentication } from "../../../components/Auth/AuthGuard";
-import MenuLayout from "../../../components/Layout/MenuLayout";
-import EditSectionForm from "../../../components/Menus/Menu/Sections/EditSectionsForm";
-import type { EditSectionsFormValues } from "../../../components/Menus/Menu/Sections/EditSectionsFormContext";
-import PageCenter from "../../../components/Shared/PageCenter";
-import PageError from "../../../components/Shared/PageError";
-import PublishButton from "../../../components/Shared/PublishButton";
+import MenuLayout from "../../../components/Layout/MenuLayout/MenuLayout";
+import EditSectionForm from "../../../components/pages/SectionsPage/EditSectionsForm";
 import type { NextPageWithLayout } from "../../_app";
 
 const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
   const router = useRouter();
   const utils = api.useContext();
   const menuId = router.query.menuId as string;
-  const [editMode, setEditMode] = useState(false);
+  const [publisheError, setPublishError] = useState(false);
 
   const { data, isLoading, isError } =
     api.menus.getSectionsWithoutProducts.useQuery(
@@ -43,13 +35,20 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
 
   const editLatestVersionSectionsMutation =
     api.menus.createVersionWithSections.useMutation({
-      onSuccess: (newSectionsData) => {
+      onSuccess: async (newSectionsData) => {
         utils.menus.getSectionsWithoutProducts.setData(
           {
             menuId,
           },
           newSectionsData,
         );
+
+        await utils.menus.invalidate();
+
+        notificateSuccess({
+          title: "Secciones actualizadas",
+          message: "Las secciones se actualizaron correctamente",
+        });
       },
     });
 
@@ -69,57 +68,45 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
   };
 
   if (isLoading || editLatestVersionSectionsMutation.isLoading)
-    return (
-      <PageCenter h="100vh">
-        <Loader />
-      </PageCenter>
-    );
+    return <PageLoader />;
 
   if (isError) {
     return (
-      <PageCenter h="100vh">
-        <PageError>
-          <Stack>
-            <Text>
-              Lamentablemente no pudimos obtener la configuración del menú
-              debido a un problema interno
-            </Text>
-            <Button component={Link} href="/menus">
-              Volver
-            </Button>
-          </Stack>
-        </PageError>
-      </PageCenter>
+      <GenericPageError
+        error="Lamentablemente no pudimos obtener la configuración del menú
+      debido a un problema interno"
+      />
+    );
+  }
+
+  if (publisheError) {
+    return (
+      <GenericPageError error="Lamentablemente no pudimos publicar tu menú" />
     );
   }
 
   return (
     <>
-      <Paper p="sm" shadow="sm">
-        <Flex justify="end">
-          <Group position="apart" style={{ width: "100%" }}>
-            <PublishButton
-              published={data.isPublic}
-              menuId={menuId}
-              onPublishError={(error) => console.log(error)}
-            />
-            <Switch
-              label="Editar"
-              checked={editMode}
-              onChange={() => setEditMode((prev) => !prev)}
-            />
-          </Group>
-        </Flex>
-      </Paper>
-
-      <Space h="sm" />
-
       <Paper p="sm" pb="lg" shadow="sm">
-        <EditSectionForm
-          editMode={editMode}
-          onEdit={handleOnEdit}
-          sections={data.sections}
-        />
+        <Group position="apart">
+          <PageSectionTitle>Secciones</PageSectionTitle>
+          <PublishButton
+            published={data.isPublic}
+            menuId={menuId}
+            onInternalError={() => setPublishError(true)}
+          />
+        </Group>
+
+        <Space h="lg" />
+
+        {data.sections.length === 0 ? (
+          <>
+            <EditSectionForm onEdit={handleOnEdit} sections={data.sections} />
+            <EmptySections />
+          </>
+        ) : (
+          <EditSectionForm onEdit={handleOnEdit} sections={data.sections} />
+        )}
       </Paper>
     </>
   );
@@ -130,8 +117,8 @@ SectionsPage.getLayout = (page: ReactElement) => {
 };
 
 SectionsPage.auth = {
-  role: "user",
-  loading: <div>Loading Session...</div>,
+  role: "USER",
+  loading: <PageLoader />,
 };
 
 export default SectionsPage;

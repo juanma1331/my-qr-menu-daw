@@ -1,25 +1,20 @@
-import type { ReactElement } from "react";
-import Link from "next/link";
+import { type ReactElement } from "react";
 import { useRouter } from "next/router";
-import {
-  Button,
-  Loader,
-  Paper,
-  Space,
-  Stack,
-  Text,
-  Title,
-} from "@mantine/core";
+import { Paper, Space } from "@mantine/core";
 
 import { api } from "~/utils/api";
 import { serializeFile } from "~/utils/client";
+import ButtonLink from "~/components/Shared/ButtonLink";
+import ErrorAlert from "~/components/Shared/ErrorAlert";
+import GenericPageError from "~/components/Shared/Page/PageError/GenericPageError";
+import PageLoader from "~/components/Shared/Page/PageLoader";
+import PageSectionTitle from "~/components/Shared/Page/PageSectionTitle";
+import { notificateSuccess } from "~/components/notifications";
 import type { WithAuthentication } from "../../../../components/Auth/AuthGuard";
-import MenuLayout from "../../../../components/Layout/MenuLayout";
+import MenuLayout from "../../../../components/Layout/MenuLayout/MenuLayout";
 import NewProductForm, {
   type NewProductFormValues,
-} from "../../../../components/Menus/Menu/Products/NewProductForm";
-import PageCenter from "../../../../components/Shared/PageCenter";
-import PageError from "../../../../components/Shared/PageError";
+} from "../../../../components/pages/NewProductPage/NewProductForm";
 import type { NextPageWithLayout } from "../../../_app";
 
 const NewProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
@@ -36,15 +31,12 @@ const NewProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
   const createVersionWithNewProductMutation =
     api.menus.createVersionWithNewProduct.useMutation({
       onSuccess: async () => {
-        await utils.menus.getProductsWithSections.invalidate({
-          menuId,
-        });
+        await utils.menus.invalidate();
 
-        await utils.menus.getSectionsWithoutProducts.invalidate({
-          menuId,
+        notificateSuccess({
+          title: "Producto creado",
+          message: "El producto se ha creado con éxito",
         });
-
-        await utils.menus.getMenusInfo.invalidate();
 
         await router.push(`/menus/${menuId}/products`);
       },
@@ -69,57 +61,43 @@ const NewProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
     });
   };
 
-  if (sectionsIsLoading)
-    return (
-      <PageCenter h="100vh">
-        <Loader />
-      </PageCenter>
-    );
+  if (sectionsIsLoading || createVersionWithNewProductMutation.isLoading)
+    return <PageLoader />;
 
   if (sectionsError) {
     return (
-      <PageCenter h="100vh">
-        <PageError>
-          <Stack>
-            <Text>
-              Lamentablemente no pudimos obtener las secciones del menú debido a
-              un problema interno
-            </Text>
-            <Button component={Link} href="/menus">
-              Volver
-            </Button>
-          </Stack>
-        </PageError>
-      </PageCenter>
+      <GenericPageError
+        error="Lamentablemente no pudimos obtener las secciones del menú debido a
+      un problema interno"
+      />
     );
   }
 
-  if (sectionsData.sections.length === 0) {
+  if (sectionsData && sectionsData.sections.length === 0) {
     return (
-      <PageCenter h="100vh">
-        <PageError>
-          <Stack>
-            <Text>
-              El menú aún no tiene secciones, por favor crea una sección antes
-              de crear un producto
-            </Text>
-            <Button component={Link} href={`/menus/${menuId}/sections`}>
-              Volver
-            </Button>
-          </Stack>
-        </PageError>
-      </PageCenter>
+      <ErrorAlert>
+        El menú no tiene secciones debes agregar al menos una.
+        <ButtonLink
+          ml="lg"
+          size="xs"
+          color="cEmerald.5"
+          to={`/menus/${menuId}/sections`}
+        >
+          Añadir Sección
+        </ButtonLink>
+      </ErrorAlert>
     );
   }
 
   return (
     <Paper p="sm" pb="lg" shadow="sm">
-      <Title order={2}>Nuevo Producto</Title>
-      <Space h="xs" />
+      <PageSectionTitle order={2}>Nuevo Producto</PageSectionTitle>
+
+      <Space h="lg" />
+
       <NewProductForm
         onSubmit={handleOnSubmitNewProduct}
         sections={sectionsData.sections}
-        isLoading={createVersionWithNewProductMutation.isLoading}
       />
     </Paper>
   );
@@ -130,7 +108,7 @@ NewProductPage.getLayout = (page: ReactElement) => {
 };
 
 NewProductPage.auth = {
-  role: "user",
+  role: "USER",
   loading: <div>Loading Session...</div>,
 };
 

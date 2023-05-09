@@ -1,32 +1,44 @@
-import { Button, Group, Text, useMantineTheme } from "@mantine/core";
 import { IconEyeCheck } from "@tabler/icons-react";
 
 import { api } from "~/utils/api";
+import { notificateError, notificateSuccess } from "../notifications";
+import Button from "./Button";
 
 export type PublishError = "no-sections" | "empty-section";
 
 type PublishButtonProps = {
   published: boolean;
   menuId: string;
-  onPublishError: (error: PublishError) => void;
+  onInternalError: () => void;
 };
 
 const PublishButton: React.FC<PublishButtonProps> = ({
   published,
   menuId,
-  onPublishError,
+  onInternalError,
 }) => {
-  const theme = useMantineTheme();
   const utils = api.useContext();
 
   const publishMenuVersionMutation = api.menus.publishMenuVersion.useMutation({
     onSuccess: async (publishResponse) => {
       if (publishResponse.publishStatus === "no-sections") {
-        onPublishError("no-sections");
+        notificateError({
+          title: "No hay secciones",
+          message:
+            "No se puede publicar un menú sin secciones. Agrega una sección!",
+        });
       } else if (publishResponse.publishStatus === "empty-section") {
-        onPublishError("empty-section");
+        notificateError({
+          title: "Sección vacía",
+          message:
+            "No se puede publicar un menú con una sección vacía. Agrega un producto!",
+        });
       } else {
         await utils.menus.invalidate();
+        notificateSuccess({
+          title: "Menú publicado",
+          message: "El menú se ha publicado correctamente",
+        });
       }
     },
     onError: (error) => console.log(error),
@@ -37,7 +49,7 @@ const PublishButton: React.FC<PublishButtonProps> = ({
       onSuccess: async () => {
         await utils.menus.invalidate();
       },
-      onError: (error) => console.log(error),
+      onError: () => onInternalError(),
     });
 
   if (published) {
@@ -45,7 +57,7 @@ const PublishButton: React.FC<PublishButtonProps> = ({
       <Button
         size="xs"
         variant="outline"
-        color="red"
+        color="red.5"
         loading={unpublishMenuVersionMutation.isLoading}
         rightIcon={<IconEyeCheck color="red" size={16} />}
         onClick={() =>
@@ -54,7 +66,7 @@ const PublishButton: React.FC<PublishButtonProps> = ({
           })
         }
       >
-        No Público
+        No Publicar
       </Button>
     );
   }
@@ -62,8 +74,7 @@ const PublishButton: React.FC<PublishButtonProps> = ({
   return (
     <Button
       size="xs"
-      variant="outline"
-      color="green"
+      color="cEmerald.5"
       loading={publishMenuVersionMutation.isLoading}
       rightIcon={<IconEyeCheck size={16} />}
       onClick={() =>
