@@ -22,6 +22,8 @@
  * This is where the tRPC API is initialized, connecting the context and
  * transformer.
  */
+
+import { randomUUID } from "crypto";
 import { TRPCError, initTRPC } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
@@ -49,11 +51,17 @@ type CreateContextOptions = {
  * @see https://create.t3.gg/en/usage/trpc#-servertrpccontextts
  */
 export const createInnerTRPCContext = (opts: CreateContextOptions) => {
+  const isTest = process.env.NODE_ENV === "test";
+  const storageFake = {
+    upload: async () => Promise.resolve(randomUUID()),
+    deleteImage: async () => Promise.resolve(),
+  };
+
   return {
     session: opts.session,
     prisma,
     qr: qrService,
-    storage: storageService,
+    storage: isTest ? storageFake : storageService,
   };
 };
 

@@ -1,12 +1,9 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
-import { Badge, Box } from "@mantine/core";
-import { IconArrowBackUp } from "@tabler/icons-react";
+import { Box } from "@mantine/core";
 
 import { api } from "~/utils/api";
-import type { WithAuthentication } from "~/components/Auth/AuthGuard";
 import Footer from "~/components/Layout/Footer";
-import Button from "~/components/Shared/Button";
 import GenericPageError from "~/components/Shared/Page/PageError/GenericPageError";
 import NotFoundPageError from "~/components/Shared/Page/PageError/NotFoundPageError";
 import PageLoader from "~/components/Shared/Page/PageLoader";

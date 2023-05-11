@@ -7,6 +7,14 @@ export type UpdateMenuVersionIsPublicOnDbParams = {
   menuId: string;
 };
 
+/**
+ * Updates the isPublic field to false for all menu versions belonging to the specified menu ID in the database.
+ *
+ * @param {Object} params - The parameters for the function.
+ * @param {number} params.menuId - The ID of the menu to update.
+ * @param {Object} params.prisma - The Prisma client used to interact with the database.
+ * @throws {TRPCError} If updating the isPublic field fails.
+ */
 export const updateMenuVersionIsPublicOnDb = async ({
   menuId,
   prisma,

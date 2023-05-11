@@ -37,6 +37,16 @@ export type CreateNewVersionParams = {
   newVersionData: NewVersionData;
 };
 
+/**
+ * Handles the product image, either uploading a new one or keeping the current one.
+ *
+ * @param {Object} HandleProductImageParams - An object containing the storage, currentImageId, and newImage.
+ * @param {Object} HandleProductImageParams.storage - The storage object to handle the image.
+ * @param {string} HandleProductImageParams.currentImageId - The current image ID.
+ * @param {Object|null} HandleProductImageParams.newImage - The new image to upload, or null if no new image.
+ * @return {Promise<string>} The new image ID if a new image was uploaded, or the current image ID if not.
+ * @throws {trpc.TRPCError} If there was an error processing the image.
+ */
 export const handleProductImage = async ({
   storage,
   currentImageId,
@@ -59,6 +69,17 @@ export const handleProductImage = async ({
   }
 };
 
+/**
+ * Prepares a new product for creation by extracting relevant information from the given
+ * parameters and returning it in a product update format.
+ *
+ * @param {object} PrepareProductForCreationParams - An object containing newProduct and
+ * imageId.
+ * @param {Product} PrepareProductForCreationParams.newProduct - The new product object.
+ * @param {string} PrepareProductForCreationParams.imageId - The id of the product image.
+ * @returns {ProductToBeUpdated} - The product update object containing id, imageId, name,
+ * description and price of the new product.
+ */
 export const prepareProductForCreation = ({
   newProduct,
   imageId,
@@ -72,6 +93,19 @@ export const prepareProductForCreation = ({
   };
 };
 
+/**
+ * Replaces a product in each section of an array of sections with a new product.
+ *
+ * @param {Object} ReplaceProductInSectionParams - An object containing the sections array and the newProduct object.
+ * @param {Object[]} ReplaceProductInSectionParams.sections - An array of section objects.
+ * @param {Object} ReplaceProductInSectionParams.newProduct - The new product object.
+ * @param {string} ReplaceProductInSectionParams.newProduct.id - The ID of the new product.
+ * @param {string} ReplaceProductInSectionParams.newProduct.name - The name of the new product.
+ * @param {string} ReplaceProductInSectionParams.newProduct.description - The description of the new product.
+ * @param {number} ReplaceProductInSectionParams.newProduct.price - The price of the new product.
+ * @param {string} ReplaceProductInSectionParams.newProduct.imageId - The image ID of the new product.
+ * @return {Object[]} An array of section objects with the new product replacing the old product.
+ */
 export const replaceProductInSection = ({
   sections,
   newProduct,
@@ -101,6 +135,18 @@ export const replaceProductInSection = ({
   }));
 };
 
+/**
+ * Creates a new version of a menu with the given sections and new version data.
+ *
+ * @async
+ * @function
+ * @param {object} params - The parameters object.
+ * @param {object} params.prisma - The Prisma client.
+ * @param {string} params.menuId - The ID of the menu to create a new version of.
+ * @param {object[]} params.sections - An array of section objects for the new version.
+ * @param {object} params.newVersionData - The data for the new menu version.
+ * @throws {trpc.TRPCError} Throws an error if there is an issue creating the new version.
+ */
 export const createNewVersion = async ({
   prisma,
   menuId,
@@ -118,7 +164,6 @@ export const createNewVersion = async ({
       },
     });
   } catch (e) {
-    console.log(e);
     throw new trpc.TRPCError({
       code: "INTERNAL_SERVER_ERROR",
       message: "Error while creating new version",

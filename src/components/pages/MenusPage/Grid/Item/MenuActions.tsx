@@ -1,4 +1,4 @@
-import { Group, createStyles } from "@mantine/core";
+import { Group } from "@mantine/core";
 import { IconPencil, IconQrcode, IconTrash } from "@tabler/icons-react";
 import { getCldImageUrl } from "next-cloudinary";
 
@@ -12,22 +12,11 @@ export type MenuActionsProps = {
   onRemove: (menuId: string) => void;
 };
 
-const useStyles = createStyles((theme) => ({
-  root: {
-    border: `1px solid ${theme.colors.cGray[1]}`,
-    "&:focus": {
-      outline: `1px solid ${theme.colors.cPink[3]}`,
-    },
-  },
-}));
-
 const MenuActions: React.FC<MenuActionsProps> = ({
   menuId,
   onRemove,
   qrImageId,
 }) => {
-  const { classes } = useStyles();
-
   const downloadImage = async (url: string) => {
     // Las soluciones más simples para descargar no funcionan correctamente.
     const response = await fetch(url);

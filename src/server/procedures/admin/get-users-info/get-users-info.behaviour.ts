@@ -5,6 +5,15 @@ export type FindUsersParams = {
   prisma: TrpcContext["prisma"];
 };
 
+/**
+ * Find users function that returns an array of users.
+ *
+ * @async
+ * @function findUsers
+ * @param {object} params - The parameters object.
+ * @param {object} params.prisma - The Prisma client instance.
+ * @returns {Promise<UserQuery[]>} An array of user objects that includes id, email, menuCreationLimit and createdMenus.
+ */
 export const findUsers = async ({
   prisma,
 }: FindUsersParams): Promise<UserQuery[]> => {

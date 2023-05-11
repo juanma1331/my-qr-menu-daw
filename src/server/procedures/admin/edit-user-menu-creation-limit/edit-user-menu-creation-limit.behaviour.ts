@@ -9,6 +9,18 @@ export type UpdateUserMenuCreationLimitOnDB = {
   newLimit: number;
 };
 
+/**
+ * Updates the menu creation limit of a user in the database.
+ *
+ * @async
+ * @function
+ * @param {Object} params - The parameters object.
+ * @param {Object} params.prisma - The prisma client.
+ * @param {number} params.userId - The id of the user whose menu creation limit is to be updated.
+ * @param {number} params.newLimit - The new menu creation limit of the user.
+ * @throws {trpc.TRPCError} When there is an error updating the user menu creation limit.
+ * @returns {Promise<UpdatedUser>} The updated user object.
+ */
 export const updateUserMenuCreationLimitOnDB = async ({
   prisma,
   userId,

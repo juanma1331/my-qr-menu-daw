@@ -1,15 +1,12 @@
 import { useState, type ReactElement } from "react";
-import Link from "next/link";
-import { Loader, Paper, Space, Title } from "@mantine/core";
+import { Paper, Space } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
 
 import { api, type RouterOutputs } from "~/utils/api";
 import type { WithAuthentication } from "~/components/Auth/AuthGuard";
 import AdminLayout from "~/components/Layout/AdminLayout";
 import Modal from "~/components/Shared/Modal";
-import PageCenter from "~/components/Shared/Page/PageCenter";
 import GenericPageError from "~/components/Shared/Page/PageError/GenericPageError";
-import PageError from "~/components/Shared/Page/PageError/PageError";
 import PageLoader from "~/components/Shared/Page/PageLoader";
 import PageSectionTitle from "~/components/Shared/Page/PageSectionTitle";
 import { notificateSuccess } from "~/components/notifications";

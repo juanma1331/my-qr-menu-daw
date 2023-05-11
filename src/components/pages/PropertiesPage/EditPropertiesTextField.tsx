@@ -1,12 +1,5 @@
 import { useState } from "react";
-import {
-  ActionIcon,
-  CloseButton,
-  Flex,
-  createStyles,
-  type TextInputProps,
-} from "@mantine/core";
-import { IconPencil } from "@tabler/icons-react";
+import { Flex, createStyles, type TextInputProps } from "@mantine/core";
 
 import TextInput from "~/components/Shared/Form/TextInput";
 import EditModeToggler from "./EditModeToggler";

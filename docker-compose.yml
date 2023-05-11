@@ -9,7 +9,8 @@ services:
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: mypassword
+      MYSQL_DATABASE: my-qr-menu-test
     volumes:
-      - ./mysql/data:/var/lib/mysql
+      - ./mysql/test-data:/var/lib/mysql
     ports:
       - 3306:3306

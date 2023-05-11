@@ -13,6 +13,7 @@
 /prisma/db.sqlite-journal
 /prisma/data
 mysql/data/*
+mysql/test-data/*
 
 # next.js
 /.next/

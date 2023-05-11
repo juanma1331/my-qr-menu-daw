@@ -23,6 +23,15 @@ export type CreateMenuAndVersionParams = {
   title: string;
 };
 
+/**
+ * Finds a user in the database using their user ID.
+ *
+ * @param {Object} params - The parameters object.
+ * @param {PrismaClient} params.prisma - The Prisma client instance.
+ * @param {string} params.userId - The ID of the user to find.
+ * @returns {Promise<UserQuery>} A Promise that resolves to the found user object.
+ * @throws {trpc.TRPCError} Throws an error if the user is not found.
+ */
 export const findUser = async ({
   prisma,
   userId,
@@ -48,6 +57,17 @@ export const findUser = async ({
 export const generateQrContent = (id: string) =>
   `${env.QR_BASE_URL}/menus/public/${id}`;
 
+/**
+ * Handles the generation and uploading of a QR code image.
+ *
+ * @param {HandleQrImageParams} params - An object containing the necessary parameters:
+ *   - storage: the storage service where the QR code image will be uploaded.
+ *   - qrGenerator: the QR code generator service.
+ *   - qrContent: the text content of the QR code.
+ * @returns {Promise<string>} - A Promise that resolves with the URL of the uploaded QR code image.
+ * @throws {trpc.TRPCError} - Throws an error if something goes wrong during the process:
+ *   - INTERNAL_SERVER_ERROR: if something goes wrong generating or uploading the QR code image.
+ */
 export const handleQrImage = async (
   params: HandleQrImageParams,
 ): Promise<string> => {
@@ -72,6 +92,19 @@ export const handleQrImage = async (
   }
 };
 
+/**
+ * Creates a new menu with a version and saves it to the database.
+ *
+ * @async
+ * @function createMenuAndVersion
+ * @param {Object} params - The parameters object.
+ * @param {PrismaClient} params.prisma - The Prisma client instance.
+ * @param {string} params.userId - The ID of the user creating the menu.
+ * @param {string} params.menuId - The ID of the menu to be created.
+ * @param {string} params.qrId - The ID of the QR code associated with the menu.
+ * @param {string} params.title - The title of the menu version.
+ * @throws {TRPCError} Throws an error if something goes wrong creating the menu.
+ */
 export const createMenuAndVersion = async ({
   prisma,
   userId,
@@ -79,16 +112,23 @@ export const createMenuAndVersion = async ({
   qrId,
   title,
 }: CreateMenuAndVersionParams) => {
-  await prisma.menu.create({
-    data: {
-      id: menuId,
-      qrId,
-      ownerId: userId,
-      versions: {
-        create: {
-          title,
+  try {
+    await prisma.menu.create({
+      data: {
+        id: menuId,
+        qrId,
+        ownerId: userId,
+        versions: {
+          create: {
+            title,
+          },
         },
       },
-    },
-  });
+    });
+  } catch (e) {
+    throw new trpc.TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Something went wrong creating the menu",
+    });
+  }
 };

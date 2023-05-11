@@ -1,4 +1,4 @@
-import { Flex, Group, createStyles } from "@mantine/core";
+import { Flex, Group } from "@mantine/core";
 
 import SearchInput from "~/components/Shared/Form/SearchInput";
 import SelectInput from "~/components/Shared/Form/SelectInput";

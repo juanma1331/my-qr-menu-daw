@@ -25,6 +25,16 @@ export type DeleteOldVersionBgImageFromStorageIfNeeded = {
   isLastVersionPublic: boolean;
 };
 
+/**
+ * Creates new version data based on last version data and input from user
+ *
+ * @param {CreateNewVersionDataParams} params - An object containing last version data, user input, and storage
+ * @param {Object} params.lastVersion - An object containing the last version data
+ * @param {Object} params.input - An object containing user input data
+ * @param {Object} params.storage - An object representing storage
+ * @return {Object} An object containing new version data
+ * @throws {TRPCError} Throws TRPCError if there's an error uploading image
+ */
 export const createNewVersionData = async ({
   lastVersion,
   input,
@@ -70,6 +80,15 @@ export const createNewVersionData = async ({
   }
 };
 
+/**
+ * Creates a new menu version with the provided params.
+ *
+ * @async
+ * @function createNewVersion
+ * @param {CreateNewVersionParams} params - The params needed to create a new menu version.
+ * @returns {Promise<CreatedMenuVersion>} The newly created menu version.
+ * @throws {trpc.TRPCError} Throws an error if there is an issue creating the new version.
+ */
 export const createNewVersion = async (
   params: CreateNewVersionParams,
 ): Promise<CreatedMenuVersion> => {
@@ -92,6 +111,18 @@ export const createNewVersion = async (
   }
 };
 
+/**
+ * Deletes old version of background image from storage if needed.
+ *
+ * @async
+ * @function
+ * @param {Object} input - The input object.
+ * @param {Object} input.storage - The storage object.
+ * @param {Object} input.input - The input object.
+ * @param {string} input.imageId - The image ID.
+ * @param {boolean} input.isLastVersionPublic - Indicates if the last version is public.
+ * @throws {TRPCError} - If there's an error deleting the image.
+ */
 export const deleteOldVersionBgImageFromStorageIfNeeded = async ({
   storage,
   input,

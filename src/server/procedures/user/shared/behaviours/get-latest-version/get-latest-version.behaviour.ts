@@ -28,6 +28,15 @@ export type GetLastVersionParams = {
   menuId: string;
 };
 
+/**
+ * Returns the latest version of a menu based on the menu ID.
+ *
+ * @async
+ * @function getLastMenuVersion
+ * @param {GetLastVersionParams} params - The parameters object containing Prisma client and menu ID.
+ * @throws {TRPCError} - Throws a TRPCError with code "NOT_FOUND" if no versions are found for the menu.
+ * @returns {Promise<MenuVersionQuery>} - Returns a Promise that resolves to the latest version of the menu.
+ */
 export const getLastMenuVersion = async (
   params: GetLastVersionParams,
 ): Promise<MenuVersionQuery> => {
@@ -63,13 +72,6 @@ export const getLastMenuVersion = async (
       },
     },
   });
-
-  if (versions.length === 0) {
-    throw new trpc.TRPCError({
-      code: "NOT_FOUND",
-      message: "No versions found for this menu",
-    });
-  }
 
   const lastVersion = versions[0];
 

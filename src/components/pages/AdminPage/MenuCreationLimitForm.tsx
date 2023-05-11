@@ -1,4 +1,4 @@
-import { Paper, Slider, Stack, createStyles } from "@mantine/core";
+import { Paper, Slider, Stack } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 
 import Button from "~/components/Shared/Button";

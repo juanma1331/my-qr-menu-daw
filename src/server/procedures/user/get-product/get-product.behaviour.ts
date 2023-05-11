@@ -8,6 +8,17 @@ export type FindProductParams = {
   prisma: TrpcContext["prisma"];
 };
 
+/**
+ * Finds a product in the database by ID using the provided prisma client.
+ *
+ * @async
+ * @function
+ * @param {Object} params - The parameters object.
+ * @param {number} params.id - The ID of the product to find.
+ * @param {PrismaClient} params.prisma - The Prisma client instance to use for database queries.
+ * @throws {TRPCError} If no product is found with the specified ID.
+ * @returns {Promise<ProductQuery>} The product matching the ID.
+ */
 export const findProduct = async ({
   id,
   prisma,

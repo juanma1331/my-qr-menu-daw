@@ -8,6 +8,17 @@ export type FindLatestVersionParams = {
   menuId: string;
 };
 
+/**
+ * Finds the latest version of a menu in the database.
+ *
+ * @async
+ * @function findLatestVersion
+ * @param {Object} params - The parameters for finding the latest version
+ * @param {Object} params.prisma - The Prisma client instance
+ * @param {number} params.menuId - The ID of the menu to look for
+ * @return {Promise<Object>} - The latest menu version found
+ * @throws {TRPCError} - If a menu version is not found
+ */
 export const findLatestVersion = async ({
   prisma,
   menuId,

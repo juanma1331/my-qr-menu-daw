@@ -6,6 +6,16 @@ export type GetLastPublicMenuVersionParams = {
   menuId: string;
 };
 
+/**
+ * Gets the last public version of a menu.
+ *
+ * @async
+ * @function getLastPublicMenuVersion
+ * @param {object} params - The parameters object.
+ * @param {object} params.prisma - The Prisma client instance.
+ * @param {number} params.menuId - The ID of the menu.
+ * @returns {Promise<MenuVersionQuery | null>} The last public version of the menu, or null if it does not exist.
+ */
 export const getLastPublicMenuVersion = async ({
   prisma,
   menuId,

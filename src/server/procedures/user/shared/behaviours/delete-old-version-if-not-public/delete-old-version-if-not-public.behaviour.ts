@@ -3,21 +3,33 @@ import * as trpc from "@trpc/server";
 import type { TrpcContext } from "~/server/api/trpc";
 import type { IMenuVersion, IProduct } from "~/server/procedures/intertaces";
 
-type MenuVersionQuery = Pick<IMenuVersion, "id" | "bgImageId" | "isPublic"> & {
+export type MenuVersionQuery = Pick<
+  IMenuVersion,
+  "id" | "bgImageId" | "isPublic"
+> & {
   sections: SectionQuery[];
 };
 
-type SectionQuery = {
+export type SectionQuery = {
   products: ProductQuery[];
 };
 
-type ProductQuery = Pick<IProduct, "imageId">;
+export type ProductQuery = Pick<IProduct, "imageId">;
 
 export type DeleteOldVersionIfNotPublicParams = {
   prisma: TrpcContext["prisma"];
   lastVersion: MenuVersionQuery;
 };
 
+/**
+ * Deletes the last version of a menu if it's not public
+ *
+ * @param {DeleteOldVersionIfNotPublicParams} params - An object containing the parameters
+ * @param {PrismaClient} params.prisma - The Prisma client used to interact with the database
+ * @param {MenuVersion} params.lastVersion - The last version of the menu
+ * @throws {TRPCError} If there's an error deleting from the database
+ * @returns {Promise<void>} - A Promise that resolves when the version is deleted
+ */
 export const deleteOldVersionIfNotPublic = async (
   params: DeleteOldVersionIfNotPublicParams,
 ): Promise<void> => {

@@ -8,6 +8,17 @@ export type FindLatesVersionParams = {
   prisma: TrpcContext["prisma"];
 };
 
+/**
+ * Finds the latest version of a menu based on its ID using Prisma.
+ *
+ * @async
+ * @function findLatesVersion
+ * @param {object} params - The parameters object.
+ * @param {number} params.menuId - The ID of the menu to find the latest version of.
+ * @param {object} params.prisma - The Prisma client instance.
+ * @throws {TRPCError} If the menu version is not found.
+ * @returns {Promise<MenuVersionQuery>} The menu version object.
+ */
 export const findLatesVersion = async ({
   menuId,
   prisma,

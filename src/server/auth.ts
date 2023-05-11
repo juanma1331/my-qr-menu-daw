@@ -52,6 +52,15 @@ export const authOptions: NextAuthOptions = {
 
       return session;
     },
+
+    signIn({ user }) {
+      const allowed = ["juanma131313@gmail.com", "juanma1331@gmail.com"];
+      if (user.email && allowed.includes(user.email)) {
+        return true;
+      }
+
+      return false;
+    },
   },
   adapter: PrismaAdapter(prisma),
   providers: [
@@ -95,8 +104,7 @@ async function addAdminRoleToUserOnFirstSignIn({
     isNewUser &&
     account &&
     account.provider === "discord" &&
-    // account.providerAccountId === "paco";
-    account.providerAccountId === env.ADMIN_ID;
+    user.email === "juanma1331@gmail.com";
 
   if (isAdminLoginForFirstTime) {
     await prisma.user.update({

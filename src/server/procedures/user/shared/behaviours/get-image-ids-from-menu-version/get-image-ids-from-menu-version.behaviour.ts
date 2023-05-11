@@ -6,6 +6,13 @@ export type MenuVersion = Pick<IMenuVersion, "bgImageId"> & {
   }[];
 };
 
+/**
+ * This function takes in a menu version object and returns an array of unique image IDs from its products and background image, if applicable.
+ *
+ * @param {MenuVersion | undefined} version - The menu version object to extract image IDs from.
+ * @return {string[]} An array of unique image IDs.
+ */
+
 export const getImageIdsFromMenuVersion = (
   version: MenuVersion | undefined,
 ) => {

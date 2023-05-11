@@ -1,8 +1,7 @@
 import { useState, type ReactElement } from "react";
 import { useRouter } from "next/router";
-import { Box, Flex, Stack, Text } from "@mantine/core";
+import { Box, Flex, Stack } from "@mantine/core";
 import { useDisclosure } from "@mantine/hooks";
-import { openConfirmModal } from "@mantine/modals";
 import { IconPlus } from "@tabler/icons-react";
 
 import { api } from "~/utils/api";

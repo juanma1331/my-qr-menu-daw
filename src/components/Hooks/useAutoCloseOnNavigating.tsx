@@ -1,5 +1,5 @@
-import { useRouter } from "next/router";
 import { useEffect } from "react";
+import { useRouter } from "next/router";
 
 type UseAutoCloseOnNavigatingProps = {
   closeHandler: () => void;
@@ -14,7 +14,7 @@ const useAutoCloseOnNavigating = ({
     router.events.on("routeChangeComplete", closeHandler);
 
     return () => router.events.off("routeChangeComplete", closeHandler);
-  }, [router.asPath]);
+  }, [router.asPath, closeHandler, router.events]);
 };
 
 export default useAutoCloseOnNavigating;
