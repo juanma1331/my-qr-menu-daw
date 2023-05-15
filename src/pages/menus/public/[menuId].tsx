@@ -17,7 +17,7 @@ const PublicMenuPage: NextPage = () => {
     data: versionData,
     isLoading: isVersionDataLoading,
     isError: isVersionDataError,
-  } = api.menus.getPublicVersion.useQuery({ menuId });
+  } = api.menus.getPublicVersion.useQuery({ menuId }, { enabled: !!menuId });
 
   if (isVersionDataLoading) return <PageLoader />;
 

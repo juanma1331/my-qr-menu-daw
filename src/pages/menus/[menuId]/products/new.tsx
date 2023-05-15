@@ -26,17 +26,23 @@ const NewProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
     data: sectionsData,
     isLoading: sectionsIsLoading,
     error: sectionsError,
-  } = api.menus.getSectionsWithoutProducts.useQuery({ menuId });
+  } = api.menus.getSectionsWithoutProducts.useQuery(
+    { menuId },
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!menuId,
+    },
+  );
 
   const createVersionWithNewProductMutation =
     api.menus.createVersionWithNewProduct.useMutation({
       onSuccess: async () => {
-        await utils.menus.invalidate();
-
         notificateSuccess({
           title: "Producto creado",
           message: "El producto se ha creado con éxito",
         });
+
+        await utils.menus.invalidate();
 
         await router.push(`/menus/${menuId}/products`);
       },
@@ -45,7 +51,7 @@ const NewProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
   const handleOnSubmitNewProduct = async (
     newProductData: NewProductFormValues,
   ) => {
-    const serializedImage = await serializeFile(newProductData.product.image);
+    const serializedImage = await serializeFile(newProductData.image);
 
     if (!serializedImage) {
       throw new Error("No se pudo serializar la imagen");
@@ -109,7 +115,7 @@ NewProductPage.getLayout = (page: ReactElement) => {
 
 NewProductPage.auth = {
   role: "USER",
-  loading: <div>Loading Session...</div>,
+  loading: <PageLoader />,
 };
 
 export default NewProductPage;

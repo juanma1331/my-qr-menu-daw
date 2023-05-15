@@ -4,6 +4,7 @@ import { type AppType } from "next/app";
 import { MantineProvider } from "@mantine/core";
 import { ModalsProvider } from "@mantine/modals";
 import { Notifications } from "@mantine/notifications";
+import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { type Session } from "next-auth";
 import { SessionProvider } from "next-auth/react";
 
@@ -35,6 +36,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
         <ModalsProvider>
           <Notifications />
           <SessionProvider session={session}>
+            <ReactQueryDevtools initialIsOpen={true} />
             {C.auth ? <AuthGuard auth={C.auth}>{layout}</AuthGuard> : layout}
           </SessionProvider>
         </ModalsProvider>

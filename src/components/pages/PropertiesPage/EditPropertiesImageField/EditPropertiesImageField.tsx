@@ -48,6 +48,7 @@ const EditPropertiesImageField: React.FC<EditPropertiesImageFieldProps> = ({
               alt="La imagen del restaurante o local"
               height={174}
               width={348}
+              sizes="348px"
               effects={[
                 {
                   improve: true,

@@ -5,7 +5,7 @@ import type {
   IMenuVersion,
   IProduct,
   ISection,
-} from "~/server/procedures/intertaces";
+} from "~/server/procedures/interfaces";
 
 export type MenuVersionQuery = Omit<IMenuVersion, "menu" | "sections"> & {
   sections: SectionQuery[];

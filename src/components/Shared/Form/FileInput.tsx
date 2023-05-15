@@ -10,9 +10,6 @@ const FileInput: React.FC<FileInputProps> = (props) => {
             borderColor: theme.colors.cPink[2],
           },
         },
-        error: {
-          backgroundColor: theme.colors.red[1],
-        },
       })}
       {...props}
     />

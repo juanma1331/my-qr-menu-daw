@@ -32,9 +32,9 @@ import { ZodError } from "zod";
 
 import { getServerAuthSession } from "../auth";
 import { prisma } from "../db";
+import type { IRole } from "../procedures/interfaces";
 import { qrService } from "../services/qrService";
 import { storageService } from "../services/storageService";
-import type { IRole } from "./../procedures/intertaces";
 
 type CreateContextOptions = {
   session: Session | null;

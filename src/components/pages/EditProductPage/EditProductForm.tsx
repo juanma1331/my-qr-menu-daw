@@ -1,4 +1,6 @@
-import { Box, Stack } from "@mantine/core";
+import { useEffect } from "react";
+import { useRouter } from "next/router";
+import { Box, Group, Stack } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { IconDeviceFloppy, IconFileUpload } from "@tabler/icons-react";
 
@@ -25,8 +27,8 @@ export type EditProductFormValues = {
     name: string;
     description: string | null;
     price: number;
-    image: File | null;
   };
+  image: File | null;
 };
 
 const EditProductForm: React.FC<EditProductFormProps> = ({
@@ -34,6 +36,7 @@ const EditProductForm: React.FC<EditProductFormProps> = ({
   sections,
   productData,
 }) => {
+  const router = useRouter();
   const form = useForm<EditProductFormValues>({
     initialValues: {
       sectionId: productData.sectionId,
@@ -41,8 +44,8 @@ const EditProductForm: React.FC<EditProductFormProps> = ({
         name: productData.product.name,
         description: productData.product.description,
         price: productData.product.price,
-        image: null,
       },
+      image: null,
     },
     validate: zodResolver(createVersionWithEditedProductFormSchema),
   });
@@ -106,14 +109,21 @@ const EditProductForm: React.FC<EditProductFormProps> = ({
           error={form.errors.sectionId}
         />
 
-        <Button
-          type="submit"
-          ml="auto"
-          size="sm"
-          rightIcon={<IconDeviceFloppy size={16} />}
-        >
-          Guardar
-        </Button>
+        <Group position="right">
+          <Button onClick={() => router.back()} vr="neutral" size="sm">
+            Atrás
+          </Button>
+
+          {form.isDirty() && (
+            <Button
+              type="submit"
+              size="sm"
+              rightIcon={<IconDeviceFloppy size={16} />}
+            >
+              Guardar
+            </Button>
+          )}
+        </Group>
       </Stack>
     </Box>
   );

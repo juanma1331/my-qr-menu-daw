@@ -1,4 +1,4 @@
-import type { IMenuVersion } from "../../intertaces";
+import type { IMenuVersion } from "../../interfaces";
 
 export type VersionQuery = Pick<
   IMenuVersion,

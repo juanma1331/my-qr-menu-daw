@@ -1,5 +1,12 @@
 import { useState } from "react";
-import { Flex, createStyles, type TextInputProps } from "@mantine/core";
+import {
+  Box,
+  Flex,
+  Text,
+  Title,
+  createStyles,
+  type TextInputProps,
+} from "@mantine/core";
 
 import TextInput from "~/components/Shared/Form/TextInput";
 import EditModeToggler from "./EditModeToggler";
@@ -10,14 +17,15 @@ export interface EditPropertiesTextFieldProps extends TextInputProps {
 }
 
 const useStyles = createStyles((theme) => ({
-  input: {
-    color: theme.colors.cGray[9],
-    "&:disabled": {
-      backgroundColor: "transparent",
-      color: theme.colors.cGray[9],
-      border: "none",
-      opacity: 1,
-    },
+  noEditTitle: {
+    fontSize: theme.fontSizes.sm,
+    color: theme.colors.cGray[7],
+    fontWeight: 500,
+  },
+  noEditText: {
+    fontSize: theme.fontSizes.sm,
+    color: theme.colors.cGray[5],
+    paddingLeft: theme.spacing.sm,
   },
   actionIcon: {
     "&:focus": {
@@ -37,17 +45,25 @@ const EditPropertiesTextField: React.FC<EditPropertiesTextFieldProps> = ({
 
   return (
     <Flex justify="space-between" align="start">
-      <TextInput
-        classNames={{
-          input: classes.input,
-        }}
-        w="80%"
-        label={label}
-        disabled={!editMode}
-        error={form.errors[fieldName]}
-        {...form.getInputProps(fieldName)}
-        {...rest}
-      />
+      {editMode ? (
+        <TextInput
+          w="80%"
+          label={label}
+          error={form.errors[fieldName]}
+          {...form.getInputProps(fieldName)}
+          {...rest}
+        />
+      ) : (
+        <Box>
+          <Title className={classes.noEditTitle} order={4}>
+            {label}
+          </Title>
+          <Text lineClamp={1} className={classes.noEditText}>
+            {/* @ts-expect-error FIX */}
+            {form.values[fieldName] ?? ""}
+          </Text>
+        </Box>
+      )}
 
       <EditModeToggler
         editMode={editMode}

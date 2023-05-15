@@ -1,7 +1,7 @@
 import { type ReactElement } from "react";
 import { useSession } from "next-auth/react";
 
-import type { IRole } from "~/server/procedures/intertaces";
+import type { IRole } from "~/server/procedures/interfaces";
 import UnAuthorizedPageError from "../Shared/Page/PageError/UnAuthorizedPageError";
 
 type AuthProps = {
@@ -19,14 +19,14 @@ type AuthGuardProps = {
 };
 
 const AuthGuard: React.FC<AuthGuardProps> = ({ children, auth }) => {
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
 
   const hasUser = !!session?.user;
   const isValidRole = session?.user?.role === auth.role;
 
   if (hasUser && isValidRole) return children;
 
-  if (!hasUser || !isValidRole) {
+  if ((!hasUser || !isValidRole) && status !== "loading") {
     return (
       <UnAuthorizedPageError error="Lo sentimos, no tienes acceso a este sitio" />
     );

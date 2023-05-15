@@ -9,7 +9,7 @@ const MenuImage: React.FC<MenuImageProps> = ({ menuImage }) => {
     <CldImage
       fill
       priority
-      sizes="100vw"
+      sizes="365px"
       src={menuImage}
       alt="imagen del local al que pertenece el menú"
       effects={[

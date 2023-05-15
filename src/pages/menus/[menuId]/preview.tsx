@@ -19,7 +19,13 @@ const PreviewPage: WithAuthentication<NextPage> = () => {
     data: versionData,
     isLoading: isVersionDataLoading,
     isError: isVersionDataError,
-  } = api.menus.getVersionForPreview.useQuery({ menuId });
+  } = api.menus.getVersionForPreview.useQuery(
+    { menuId },
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!menuId,
+    },
+  );
 
   if (isVersionDataLoading) return <PageLoader />;
 

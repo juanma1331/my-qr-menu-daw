@@ -25,13 +25,15 @@ const UsersPage: WithAuthentication<NextPageWithLayout> = ({}) => {
   const [editUserId, setEditUserId] = useState<string | null>(null);
   const [currentLimit, setCurrentLimit] = useState<number | null>(null);
   const [editMenuCreationLimitError, setEditMenuCreationLimitError] =
-    useState<boolean>(false);
+    useState(false);
 
   const {
     data: usersData,
     isLoading: usersDataLoading,
     error: usersDataError,
-  } = api.menus.getUsersInfo.useQuery();
+  } = api.menus.getUsersInfo.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   const editUserMenuCreationLimitMutation =
     api.menus.editUserMenuCreationLimit.useMutation({

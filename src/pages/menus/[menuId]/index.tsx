@@ -27,8 +27,7 @@ const MenuPage: WithAuthentication<NextPageWithLayout> = () => {
     },
     {
       refetchOnWindowFocus: false,
-      staleTime: Infinity,
-      cacheTime: 5000,
+      enabled: !!menuId,
     },
   );
 
@@ -37,7 +36,11 @@ const MenuPage: WithAuthentication<NextPageWithLayout> = () => {
       onSuccess: async (newProperties) => {
         utils.menus.getMenuProperties.setData({ menuId }, newProperties);
 
-        await utils.menus.invalidate();
+        await utils.menus.getMenusInfo.invalidate();
+        await utils.menus.getSectionsWithoutProducts.invalidate();
+        await utils.menus.getProductsWithSections.invalidate();
+        await utils.menus.getVersionForPreview.invalidate();
+        await utils.menus.getProduct.invalidate();
 
         notificateSuccess({
           title: "Propiedades actualizadas",
@@ -80,6 +83,7 @@ const MenuPage: WithAuthentication<NextPageWithLayout> = () => {
   }
 
   if (publishError) {
+    setPublishError(false);
     return (
       <GenericPageError error="Lamentablemente no pudimos publicar el menú debido a un problema interno" />
     );

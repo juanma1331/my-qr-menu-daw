@@ -1,4 +1,4 @@
-import type { IMenuVersion, IProduct, ISection } from "../../intertaces";
+import type { IMenuVersion, IProduct, ISection } from "../../interfaces";
 
 export type MenuVersionForCreation = Pick<
   IMenuVersion,

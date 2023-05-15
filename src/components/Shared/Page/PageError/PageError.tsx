@@ -1,7 +1,7 @@
 import Image from "next/image";
-import { Flex, Stack, Text } from "@mantine/core";
+import { useRouter } from "next/router";
+import { Button, Flex, Stack, Text } from "@mantine/core";
 
-import ButtonLink from "../../ButtonLink";
 import PageCenter from "../PageCenter";
 
 export type PageErrorProps = {
@@ -15,6 +15,7 @@ const PageError: React.FC<PageErrorProps> = ({
   illustration,
   children,
 }) => {
+  const router = useRouter();
   return (
     <PageCenter>
       <Flex direction="column" align="center" gap="lg">
@@ -26,7 +27,7 @@ const PageError: React.FC<PageErrorProps> = ({
           <Text align="center" color="cGray.7">
             {error}
           </Text>
-          <ButtonLink to="/">Volver</ButtonLink>
+          <Button onClick={() => router.back()}>Volver</Button>
         </Stack>
       </Flex>
     </PageCenter>

@@ -3,11 +3,8 @@ import { beforeEach, describe, expect, it } from "vitest";
 import { appRouter } from "~/server/api/root";
 import { prisma } from "~/server/db";
 import { clearAllTables, createTestContext } from "../../test-utils";
-import type { RouterInputs } from "./../../../../utils/api";
 
 describe("getUsersInfoProcedure", () => {
-  type Input = RouterInputs["menus"]["getUsersInfo"];
-
   beforeEach(async () => {
     await clearAllTables();
   });

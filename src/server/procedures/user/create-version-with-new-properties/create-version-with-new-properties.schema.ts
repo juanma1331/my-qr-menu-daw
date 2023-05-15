@@ -9,7 +9,7 @@ const propertiesSchema = z.object({
   title: z
     .string()
     .min(1, { message: "El título debe tener al menos 1 caracter" })
-    .max(120, { message: "El título debe tener como máximo 120 caracteres" }),
+    .max(50, { message: "El título debe tener como máximo 50 caracteres" }),
   subtitle: z
     .string()
     .max(100, { message: "El subtítulo debe tener como máximo 100 caracteres" })

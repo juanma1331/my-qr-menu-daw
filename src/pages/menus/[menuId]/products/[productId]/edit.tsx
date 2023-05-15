@@ -56,13 +56,14 @@ const EditProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
   const handleOnSubmit = async ({
     product,
     sectionId,
+    image,
   }: EditProductFormValues) => {
     if (!productData) return;
 
-    const image = product.image ? await serializeFile(product.image) : null;
+    const serializedImage = image ? await serializeFile(image) : null;
     const editedProduct = {
       ...product,
-      image,
+      image: serializedImage,
       id: productData.product.id,
       currentImageId: productData.product.imageId,
     };
@@ -74,7 +75,13 @@ const EditProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
     });
   };
 
-  if (sectionsDataLoading || productDataLoading) return <PageLoader />;
+  if (
+    sectionsDataLoading ||
+    productDataLoading ||
+    createVersionWithEditedProductMutation.isLoading
+  ) {
+    return <PageLoader />;
+  }
 
   if (sectionsDataError || productDataError || !sectionsData || !productData) {
     return (
@@ -83,6 +90,7 @@ const EditProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
   }
 
   if (editError) {
+    setEditError(false);
     return (
       <GenericPageError error="Lamentablemente no pudimos editar el producto" />
     );

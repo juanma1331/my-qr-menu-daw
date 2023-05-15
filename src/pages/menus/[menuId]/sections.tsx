@@ -9,7 +9,6 @@ import PageSectionTitle from "~/components/Shared/Page/PageSectionTitle";
 import PublishButton from "~/components/Shared/PublishButton";
 import { notificateSuccess } from "~/components/notifications";
 import type { EditSectionsFormValues } from "~/components/pages/SectionsPage/EditSectionsFormContext";
-import EmptySections from "~/components/pages/SectionsPage/EmptySections";
 import type { WithAuthentication } from "../../../components/Auth/AuthGuard";
 import MenuLayout from "../../../components/Layout/MenuLayout/MenuLayout";
 import EditSectionForm from "../../../components/pages/SectionsPage/EditSectionsForm";
@@ -26,23 +25,12 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
       {
         menuId,
       },
-      {
-        refetchOnWindowFocus: false,
-        staleTime: Infinity,
-        cacheTime: 5000,
-      },
+      { refetchOnWindowFocus: false, enabled: !!menuId },
     );
 
   const editLatestVersionSectionsMutation =
     api.menus.createVersionWithSections.useMutation({
-      onSuccess: async (newSectionsData) => {
-        utils.menus.getSectionsWithoutProducts.setData(
-          {
-            menuId,
-          },
-          newSectionsData,
-        );
-
+      onSuccess: async () => {
         await utils.menus.invalidate();
 
         notificateSuccess({
@@ -53,21 +41,14 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
     });
 
   const handleOnEdit = ({ sections }: EditSectionsFormValues) => {
-    const cachedSections = utils.menus.getSectionsWithoutProducts.getData({
-      menuId,
-    });
-
-    if (!cachedSections) {
-      throw new Error("No cached sections");
-    }
-
+    console.log(sections);
     editLatestVersionSectionsMutation.mutate({
       menuId,
       sections,
     });
   };
 
-  if (isLoading || editLatestVersionSectionsMutation.isLoading)
+  if (isLoading || editLatestVersionSectionsMutation.isLoading || !data)
     return <PageLoader />;
 
   if (isError) {
@@ -80,6 +61,7 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
   }
 
   if (publisheError) {
+    setPublishError(false);
     return (
       <GenericPageError error="Lamentablemente no pudimos publicar tu menú" />
     );
@@ -99,14 +81,7 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
 
         <Space h="lg" />
 
-        {data.sections.length === 0 ? (
-          <>
-            <EditSectionForm onEdit={handleOnEdit} sections={data.sections} />
-            <EmptySections />
-          </>
-        ) : (
-          <EditSectionForm onEdit={handleOnEdit} sections={data.sections} />
-        )}
+        <EditSectionForm onEdit={handleOnEdit} sections={data.sections} />
       </Paper>
     </>
   );

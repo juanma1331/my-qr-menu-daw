@@ -1,7 +1,7 @@
 import * as trpc from "@trpc/server";
 
 import type { TrpcContext } from "~/server/api/trpc";
-import type { IMenuVersion, IProduct } from "~/server/procedures/intertaces";
+import type { IMenuVersion, IProduct } from "~/server/procedures/interfaces";
 
 export type MenuVersionQuery = Pick<
   IMenuVersion,

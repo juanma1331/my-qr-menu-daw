@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { ScrollArea, Space, Table } from "@mantine/core";
+import { ScrollArea, Space, Table, createStyles } from "@mantine/core";
 import { randomId } from "@mantine/hooks";
 
 import type { RouterOutputs } from "~/utils/api";
@@ -21,11 +21,18 @@ export type ProductsTableProps = {
   onEdit: (productId: number) => void;
 };
 
+const useStyles = createStyles((theme) => ({
+  scrollArea: {
+    height: 410,
+  },
+}));
+
 const ProductsTable: React.FC<ProductsTableProps> = ({
   products,
   onDelete,
   onEdit,
 }) => {
+  const { classes } = useStyles();
   const searchFilter = useCallback((data: Product[], query: string) => {
     return data.filter((product) =>
       product.name.toLowerCase().includes(query.toLowerCase()),
@@ -105,7 +112,7 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
 
       <Space h="xs" />
 
-      <ScrollArea h={460}>
+      <ScrollArea type="always" className={classes.scrollArea}>
         <Table
           sx={{
             maxWidth: "80%",

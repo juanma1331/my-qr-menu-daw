@@ -1,4 +1,4 @@
-import type { IMenu, IMenuVersion } from "../../intertaces";
+import type { IMenu, IMenuVersion } from "../../interfaces";
 
 export type MenuQuery = Pick<IMenu, "qrId"> & {
   versions: MenuVersionQuery[];

@@ -1,5 +1,6 @@
+import { useEffect } from "react";
 import { DragDropContext, Draggable, Droppable } from "@hello-pangea/dnd";
-import { Box, Group, Space } from "@mantine/core";
+import { Box, Center, Group, Space, Text } from "@mantine/core";
 import { zodResolver } from "@mantine/form";
 import { IconDeviceFloppy, IconPlus } from "@tabler/icons-react";
 
@@ -33,6 +34,14 @@ const EditSectionForm: React.FC<EditSectionFormProps> = ({
     validate: zodResolver(sectionsSchema),
   });
 
+  // Actualizamos los valores del formulario manualmente ya que no se actualiza automáticamente cuando cambian las secciones
+  useEffect(() => {
+    form.setValues({
+      sections,
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sections]);
+
   const addNewSection = () => {
     form.insertListItem("sections", {
       name: "",
@@ -41,7 +50,7 @@ const EditSectionForm: React.FC<EditSectionFormProps> = ({
   };
 
   const fields = form.values.sections.map(
-    (s: { name: string }, index: number) => (
+    (s: { name: string; id: number }, index: number) => (
       <Draggable key={index} index={index} draggableId={index.toString()}>
         {(provided) => (
           <EditSectionFormField draggableProps={provided} index={index} />
@@ -107,6 +116,14 @@ const EditSectionForm: React.FC<EditSectionFormProps> = ({
               </Button>
             </Group>
           </>
+        )}
+
+        {form.values.sections.length === 0 && (
+          <Center h="200px">
+            <Text size="md" color="cGray.3">
+              Este menú no tiene secciones
+            </Text>
+          </Center>
         )}
       </Box>
     </EditSectionsFormProvider>

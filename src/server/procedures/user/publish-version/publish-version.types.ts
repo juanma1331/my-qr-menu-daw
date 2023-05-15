@@ -1,4 +1,4 @@
-import type { IMenuVersion, IProduct } from "../../intertaces";
+import type { IMenuVersion, IProduct } from "../../interfaces";
 
 export type MenuVersionQuery = Pick<
   IMenuVersion,

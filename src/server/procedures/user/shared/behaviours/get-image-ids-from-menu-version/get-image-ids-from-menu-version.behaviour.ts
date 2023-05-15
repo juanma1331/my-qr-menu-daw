@@ -1,4 +1,4 @@
-import type { IMenuVersion } from "~/server/procedures/intertaces";
+import type { IMenuVersion } from "~/server/procedures/interfaces";
 
 export type MenuVersion = Pick<IMenuVersion, "bgImageId"> & {
   sections: {

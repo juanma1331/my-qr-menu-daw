@@ -31,7 +31,9 @@ const MenusPage: WithAuthentication<NextPageWithLayout> = () => {
     refetch,
     isLoading: menusLoading,
     isError: menusError,
-  } = api.menus.getMenusInfo.useQuery();
+  } = api.menus.getMenusInfo.useQuery(undefined, {
+    refetchOnWindowFocus: false,
+  });
 
   const createMenuAndVersionMutation =
     api.menus.createMenuAndVersion.useMutation({
@@ -79,19 +81,22 @@ const MenusPage: WithAuthentication<NextPageWithLayout> = () => {
   if (
     menusLoading ||
     createMenuAndVersionMutation.isLoading ||
-    deleteMenuMutation.isLoading
+    deleteMenuMutation.isLoading ||
+    !data
   )
     return <PageLoader />;
 
-  if (menusError)
+  if (menusError) {
     return (
       <GenericPageError
         error="Lamentablemente no pudimos obtener tus menús debido a un problema
       interno"
       />
     );
+  }
 
   if (deletionError) {
+    setDeletionError(false);
     return (
       <GenericPageError
         error="Lamentablemente no pudimos borrar tu menú debido a un problema
@@ -101,6 +106,7 @@ const MenusPage: WithAuthentication<NextPageWithLayout> = () => {
   }
 
   if (creationError) {
+    setCreationError(false);
     return (
       <GenericPageError error="Lamentablemente no pudimos crear tu menú debido a un problema interno" />
     );

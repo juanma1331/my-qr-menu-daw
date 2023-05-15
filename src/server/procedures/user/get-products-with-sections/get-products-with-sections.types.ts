@@ -2,7 +2,7 @@ import {
   type IMenuVersion,
   type IProduct,
   type ISection,
-} from "../../intertaces";
+} from "../../interfaces";
 
 export type MenuVersionQuery = Pick<IMenuVersion, "isPublic"> & {
   sections: SectionQuery[];

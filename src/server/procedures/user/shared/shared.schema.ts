@@ -47,13 +47,3 @@ export const menuImageSchema = baseFileSchema
     "Formatos soportados .jpeg, .jpg y .png",
   )
   .nullable();
-
-export const productImageSchema = baseFileSchema
-  .refine(
-    (file) => file.size <= PRODUCT_MAX_FILE_SIZE,
-    "El tamaño no puede superar 1mb",
-  )
-  .refine(
-    (file) => ACCEPTED_IMAGE_TYPES.includes(file.type),
-    "Formatos soportados .jpeg, .jpg y .png",
-  );

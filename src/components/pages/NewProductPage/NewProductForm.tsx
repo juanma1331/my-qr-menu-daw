@@ -1,4 +1,5 @@
-import { Box, Stack } from "@mantine/core";
+import { useRouter } from "next/router";
+import { Box, Group, Stack } from "@mantine/core";
 import { useForm, zodResolver } from "@mantine/form";
 import { IconFileUpload } from "@tabler/icons-react";
 
@@ -23,14 +24,15 @@ export type NewProductFormValues = {
     name: string;
     description: string | null;
     price: number;
-    image: File | null;
   };
+  image: File | null;
 };
 
 const NewProductForm: React.FC<NewProductFormProps> = ({
   onSubmit,
   sections,
 }) => {
+  const router = useRouter();
   const form = useForm<NewProductFormValues>({
     initialValues: {
       sectionId: 0,
@@ -38,8 +40,8 @@ const NewProductForm: React.FC<NewProductFormProps> = ({
         name: "",
         description: "",
         price: 100,
-        image: null,
       },
+      image: null,
     },
     validate: zodResolver(createVersionWithNewProductFormSchema),
   });
@@ -58,11 +60,13 @@ const NewProductForm: React.FC<NewProductFormProps> = ({
           withAsterisk
           {...form.getInputProps("product.name")}
         />
+
         <TextInput
           label="Descripción"
           placeholder="Nuestra cerveza a su óptima temperatura"
           {...form.getInputProps("product.description")}
         />
+
         <NumberInput
           label="Precio"
           placeholder="1300"
@@ -71,6 +75,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({
           step={100}
           {...form.getInputProps("product.price")}
         />
+
         <FileInput
           label="Imagen"
           accept={ACCEPTED_IMAGE_TYPES.join(",")}
@@ -78,7 +83,7 @@ const NewProductForm: React.FC<NewProductFormProps> = ({
           clearable
           withAsterisk
           rightSection={<IconFileUpload size={18} color="gray" />}
-          {...form.getInputProps("product.image")}
+          {...form.getInputProps("image")}
         />
 
         <SelectInput
@@ -90,14 +95,25 @@ const NewProductForm: React.FC<NewProductFormProps> = ({
             if (!e) {
               return;
             }
-            form.setFieldValue("sectionId", parseInt(e)); // TODO check if this is correct
+            form.setFieldValue("sectionId", parseInt(e)); // TODO check
           }}
           error={form.errors.sectionId}
         />
 
-        <Button type="submit" ml="auto" size="sm">
-          Añadir
-        </Button>
+        <Group>
+          <Button
+            onClick={() => router.back()}
+            vr="neutral"
+            ml="auto"
+            size="sm"
+          >
+            Atrás
+          </Button>
+
+          <Button type="submit" size="sm">
+            Añadir
+          </Button>
+        </Group>
       </Stack>
     </Box>
   );

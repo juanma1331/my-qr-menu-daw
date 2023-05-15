@@ -1,6 +1,6 @@
 import { useState, type ReactElement } from "react";
 import { useRouter } from "next/router";
-import { Group, Paper, Space } from "@mantine/core";
+import { Badge, Group, Paper, Space } from "@mantine/core";
 import { IconPlus } from "@tabler/icons-react";
 
 import { api } from "~/utils/api";
@@ -24,7 +24,10 @@ const ProductsPage: WithAuthentication<NextPageWithLayout> = () => {
   const [publishError, setPublishError] = useState(false);
 
   const { data, isLoading, isError } =
-    api.menus.getProductsWithSections.useQuery({ menuId });
+    api.menus.getProductsWithSections.useQuery(
+      { menuId },
+      { enabled: !!menuId, refetchOnWindowFocus: false },
+    );
 
   const createVersionWithoutDeletedProductMutation =
     api.menus.createVersionWithoutDeletedProduct.useMutation({
@@ -41,7 +44,6 @@ const ProductsPage: WithAuthentication<NextPageWithLayout> = () => {
       onError: (e) => console.log(e),
     });
 
-  //  Está seguro que desea borrar este producto? Esta acción no se puede deshacer. Borrar Producto
   const openDeleteModal = (id: number) => {
     return openDeleteConfirmModal({
       title: "Borrar Producto",
@@ -55,7 +57,11 @@ const ProductsPage: WithAuthentication<NextPageWithLayout> = () => {
     });
   };
 
-  if (isLoading || createVersionWithoutDeletedProductMutation.isLoading)
+  if (
+    isLoading ||
+    createVersionWithoutDeletedProductMutation.isLoading ||
+    !data
+  )
     return <PageLoader />;
 
   if (isError) {
@@ -68,6 +74,7 @@ const ProductsPage: WithAuthentication<NextPageWithLayout> = () => {
   }
 
   if (publishError) {
+    setPublishError(false);
     return (
       <GenericPageError error="Lamentablemente no pudimos publicar el menú debido a un problema interno" />
     );
@@ -102,15 +109,21 @@ const ProductsPage: WithAuthentication<NextPageWithLayout> = () => {
       <Space h="lg" />
 
       {data.products.length > 0 ? (
-        <ProductsTable
-          products={data.products}
-          onDelete={(productId: number) => {
-            openDeleteModal(productId);
-          }}
-          onEdit={async (productId: number) => {
-            await router.push(`/menus/${menuId}/products/${productId}/edit`);
-          }}
-        />
+        <>
+          <ProductsTable
+            products={data.products}
+            onDelete={(productId: number) => {
+              openDeleteModal(productId);
+            }}
+            onEdit={(productId: number) => {
+              void router.push(`/menus/${menuId}/products/${productId}/edit`);
+            }}
+          />
+
+          <Group position="right" mt="sm">
+            <Badge color="cGray.4">{data.products.length} productos</Badge>
+          </Group>
+        </>
       ) : (
         <EmptyProductsTable />
       )}
@@ -124,7 +137,7 @@ ProductsPage.getLayout = (page: ReactElement) => {
 
 ProductsPage.auth = {
   role: "USER",
-  loading: <div>Loading Session...</div>,
+  loading: <PageLoader />,
 };
 
 export default ProductsPage;
