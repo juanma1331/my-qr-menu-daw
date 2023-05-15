@@ -11,9 +11,10 @@ export type VersionProductProps = {
 
 const useStyles = createStyles((theme) => ({
   root: {
-    display: "grid",
-    gridTemplateColumns: "66px 3.5fr 66px",
-    gap: theme.spacing.xs,
+    display: "flex",
+    alignItems: "center",
+    gap: theme.spacing.md,
+    padding: ".25rem",
   },
   image: {
     borderRadius: theme.radius.sm,
@@ -26,8 +27,15 @@ const useStyles = createStyles((theme) => ({
     fontFamily: josefinSans.style.fontFamily,
     fontSize: theme.fontSizes.xs,
   },
+  infoContainer: {
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "start",
+    alignItems: "start",
+  },
   price: {
-    borderRadius: "100%",
+    borderRadius: "50%",
+    padding: ".50rem",
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -40,10 +48,10 @@ const VersionProduct: React.FC<VersionProductProps> = ({ product }) => {
   const { classes } = useStyles();
 
   return (
-    <Paper p="xs" shadow="md" className={classes.root}>
+    <Paper shadow="md" className={classes.root}>
       <CldImage
-        height={66}
-        width={66}
+        height={33}
+        width={33}
         priority
         className={classes.image}
         src={product.imageId}
@@ -55,19 +63,17 @@ const VersionProduct: React.FC<VersionProductProps> = ({ product }) => {
         ]}
       />
 
-      <Group w="100%">
-        <Stack spacing="xs">
-          <Text className={classes.name} color="cGray.9" weight={500}>
-            {product.name}
-          </Text>
-          <Text className={classes.description} color="cGray.5" lineClamp={1}>
-            {product.description ? product.description : "\u00A0"}
-          </Text>
-        </Stack>
-      </Group>
+      <Box w="100%" className={classes.infoContainer}>
+        <Text className={classes.name} color="cGray.9" weight={500}>
+          {product.name}
+        </Text>
+        <Text className={classes.description} color="cGray.5" lineClamp={1}>
+          {product.description ? product.description : "\u00A0"}
+        </Text>
+      </Box>
 
       <Box className={classes.price}>
-        <Text size="sm" color="cGray.9" weight={500}>
+        <Text size="xs" color="cGray.9" weight={500}>
           {formatPrice(product.price)}
         </Text>
       </Box>

@@ -56,6 +56,7 @@ const useStyles = createStyles(
     cartTitle: {
       fontFamily: josefinSans.style.fontFamily,
       color: theme.colors.cGray[4],
+      fontSize: theme.fontSizes.xl,
     },
     bgOverlay: {
       position: "absolute",
@@ -79,17 +80,20 @@ const useStyles = createStyles(
     },
     sections: {
       position: "absolute",
-      top: "18rem",
+      top: "14rem",
       left: "50%",
       zIndex: 2,
       transform: "translateX(-50%)",
-      width: "70%",
+      width: "90%",
       maxWidth: "50rem",
     },
     scrollArea: {
       display: "flex",
       flexDirection: "column",
       gap: "2rem",
+    },
+    introduction: {
+      fontSize: theme.fontSizes.md,
     },
   }),
 );

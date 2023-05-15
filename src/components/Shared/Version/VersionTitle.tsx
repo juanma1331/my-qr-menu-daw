@@ -12,14 +12,20 @@ const useStyles = createStyles((theme) => ({
     textAlign: "center",
   },
   title: {
+    fontSize: theme.fontSizes.xl,
     color: theme.colors.cGray[0],
     fontFamily: josefinSans.style.fontFamily,
-    textTransform: "capitalize",
+    [theme.fn.largerThan("md")]: {
+      fontSize: theme.fontSizes.lg,
+    },
   },
   subtitle: {
     color: theme.colors.cGray[2],
-    fontSize: theme.fontSizes.xl,
+    fontSize: theme.fontSizes.sm,
     fontFamily: josefinSans.style.fontFamily,
+    [theme.fn.largerThan("md")]: {
+      fontSize: theme.fontSizes.md,
+    },
   },
 }));
 

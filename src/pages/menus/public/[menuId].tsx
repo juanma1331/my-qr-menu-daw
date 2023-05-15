@@ -3,7 +3,6 @@ import { useRouter } from "next/router";
 import { Box } from "@mantine/core";
 
 import { api } from "~/utils/api";
-import Footer from "~/components/Layout/Footer";
 import GenericPageError from "~/components/Shared/Page/PageError/GenericPageError";
 import NotFoundPageError from "~/components/Shared/Page/PageError/NotFoundPageError";
 import PageLoader from "~/components/Shared/Page/PageLoader";
@@ -42,15 +41,6 @@ const PublicMenuPage: NextPage = () => {
       })}
     >
       <Version version={versionData.version} />
-
-      <Footer
-        style={{
-          position: "sticky",
-          top: "95.8%",
-          bottom: 0,
-          zIndex: 3,
-        }}
-      />
     </Box>
   );
 };

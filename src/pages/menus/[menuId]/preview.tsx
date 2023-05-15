@@ -61,15 +61,6 @@ const PreviewPage: WithAuthentication<NextPage> = () => {
           </>
         }
       />
-
-      <Footer
-        style={{
-          position: "sticky",
-          top: "95.8%",
-          bottom: 0,
-          zIndex: 3,
-        }}
-      />
     </Box>
   );
 };

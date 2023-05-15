@@ -28,6 +28,7 @@ const useStyles = createStyles((theme) => ({
   },
   name: {
     fontFamily: josefinSans.style.fontFamily,
+    fontSize: theme.fontSizes.lg,
   },
 }));
 
@@ -35,7 +36,7 @@ const VersionSection: React.FC<VersionSectionProps> = ({ section }) => {
   const { classes } = useStyles();
   return (
     <Box className={classes.root}>
-      <Paper p="lg" shadow="lg" className={classes.section}>
+      <Paper p="sm" shadow="lg" className={classes.section}>
         <Title className={classes.name} color="cGray.9" order={2}>
           {section.name}
         </Title>
