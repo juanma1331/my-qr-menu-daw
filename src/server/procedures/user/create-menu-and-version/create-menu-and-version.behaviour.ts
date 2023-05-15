@@ -55,7 +55,7 @@ export const findUser = async ({
 };
 
 export const generateQrContent = (id: string) =>
-  `${env.QR_BASE_URL}/menus/public/${id}`;
+  `${env.NEXTAUTH_URL}/menus/public/${id}`;
 
 /**
  * Handles the generation and uploading of a QR code image.

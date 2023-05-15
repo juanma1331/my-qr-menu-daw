@@ -24,7 +24,6 @@ const server = z.object({
   NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().min(1),
   CLOUDINARY_API_KEY: z.string().min(1),
   CLOUDINARY_API_SECRET: z.string().min(1),
-  QR_BASE_URL: z.string().min(1),
 });
 
 /**
@@ -52,7 +51,6 @@ const processEnv = {
     process.env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET,
-  QR_BASE_URL: process.env.QR_BASE_URL,
   // NEXT_PUBLIC_CLIENTVAR: process.env.NEXT_PUBLIC_CLIENTVAR,
 };
 
