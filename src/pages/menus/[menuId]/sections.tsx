@@ -41,7 +41,6 @@ const SectionsPage: WithAuthentication<NextPageWithLayout> = () => {
     });
 
   const handleOnEdit = ({ sections }: EditSectionsFormValues) => {
-    console.log(sections);
     editLatestVersionSectionsMutation.mutate({
       menuId,
       sections,

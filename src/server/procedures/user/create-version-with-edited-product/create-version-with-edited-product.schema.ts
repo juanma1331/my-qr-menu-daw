@@ -61,5 +61,6 @@ export const createVersionWithEditedProductFormSchema = z.object({
       }
 
       return true;
-    }, "El producto debe tener una imagen"),
+    }, "El producto debe tener una imagen")
+    .nullable(),
 });

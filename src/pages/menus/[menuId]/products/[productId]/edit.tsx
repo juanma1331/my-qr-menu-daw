@@ -26,9 +26,15 @@ const EditProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
     data: sectionsData,
     isLoading: sectionsDataLoading,
     error: sectionsDataError,
-  } = api.menus.getSectionsWithoutProducts.useQuery({
-    menuId,
-  });
+  } = api.menus.getSectionsWithoutProducts.useQuery(
+    {
+      menuId,
+    },
+    {
+      refetchOnWindowFocus: false,
+      enabled: !!menuId,
+    },
+  );
 
   const {
     data: productData,
@@ -41,7 +47,10 @@ const EditProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
   const createVersionWithEditedProductMutation =
     api.menus.createVersionWithEditedProduct.useMutation({
       onSuccess: async () => {
-        await utils.menus.invalidate();
+        await utils.menus.getMenuProperties.invalidate();
+        await utils.menus.getProductsWithSections.invalidate();
+        await utils.menus.getVersionForPreview.invalidate();
+        await utils.menus.getSectionsWithoutProducts.invalidate();
 
         notificateSuccess({
           title: "Producto editado",
@@ -78,12 +87,14 @@ const EditProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
   if (
     sectionsDataLoading ||
     productDataLoading ||
-    createVersionWithEditedProductMutation.isLoading
+    createVersionWithEditedProductMutation.isLoading ||
+    !sectionsData ||
+    !productData
   ) {
     return <PageLoader />;
   }
 
-  if (sectionsDataError || productDataError || !sectionsData || !productData) {
+  if (sectionsDataError || productDataError) {
     return (
       <GenericPageError error="Lamentablemente no pudimos obtener la información del servidor" />
     );

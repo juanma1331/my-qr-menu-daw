@@ -33,6 +33,7 @@ export const createVersionWithEditedProductProcedure = protectedProcedure
     const updatedSections = replaceProductInSection({
       sections: lastVersion.sections,
       newProduct: preparedProduct,
+      productSectionId: input.sectionId,
     });
 
     await ctx.prisma.$transaction(async (prisma) => {

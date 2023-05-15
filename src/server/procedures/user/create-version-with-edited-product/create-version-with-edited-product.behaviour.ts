@@ -28,6 +28,7 @@ export type PrepareProductForCreationParams = {
 export type ReplaceProductInSectionParams = {
   sections: SectionQuery[];
   newProduct: ProductToBeUpdated;
+  productSectionId: number;
 };
 
 export type CreateNewVersionParams = {
@@ -109,8 +110,55 @@ export const prepareProductForCreation = ({
 export const replaceProductInSection = ({
   sections,
   newProduct,
+  productSectionId,
 }: ReplaceProductInSectionParams): PreparedSection[] => {
-  return sections.map((section) => ({
+  const originProductSectionId = sections
+    .flatMap((section) => section.products)
+    .find((p) => p.id === newProduct.id)?.sectionId;
+
+  if (!originProductSectionId) {
+    throw new trpc.TRPCError({
+      code: "BAD_REQUEST",
+      message: "Origin section not  found",
+    });
+  }
+
+  const hasSectionChanged = originProductSectionId !== productSectionId;
+
+  let sectionsToBePrepared: SectionQuery[] = sections;
+
+  if (hasSectionChanged) {
+    const originalProduct = sections
+      .flatMap((section) => section.products)
+      .find((p) => p.id === newProduct.id);
+
+    if (!originalProduct) {
+      throw new trpc.TRPCError({
+        code: "BAD_REQUEST",
+        message: "Original product not found",
+      });
+    }
+
+    sectionsToBePrepared = sections.map((section) => {
+      if (section.id === originProductSectionId) {
+        return {
+          ...section,
+          products: section.products.filter((p) => p.id !== newProduct.id),
+        };
+      }
+
+      if (section.id === productSectionId) {
+        return {
+          ...section,
+          products: [...section.products, originalProduct],
+        };
+      }
+
+      return section;
+    });
+  }
+
+  return sectionsToBePrepared.map((section) => ({
     name: section.name,
     position: section.position,
     products: {
