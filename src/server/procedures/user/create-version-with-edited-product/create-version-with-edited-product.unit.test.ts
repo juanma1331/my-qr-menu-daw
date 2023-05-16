@@ -119,6 +119,7 @@ describe("replaceProductInSection", () => {
   it("should return prepared sections with updated product", () => {
     // Arrange
     const testParams: ReplaceProductInSectionParams = {
+      productSectionId: 1,
       sections: [
         {
           id: 1,

@@ -1,6 +1,5 @@
 import * as trpc from "@trpc/server";
 
-import { env } from "~/env.mjs";
 import type { TrpcContext } from "~/server/api/trpc";
 import type { UserQuery } from "./create-menu-and-version.types";
 

@@ -43,6 +43,7 @@ describe("createVersionWithEditedProductProcedure", () => {
                 isPublic: false,
                 sections: {
                   create: {
+                    id: 1,
                     name: "Section 1",
                     position: 1,
                     products: {
@@ -103,6 +104,7 @@ describe("createVersionWithEditedProductProcedure", () => {
                 isPublic: true,
                 sections: {
                   create: {
+                    id: 1,
                     name: "Section 1",
                     position: 1,
                     products: {

@@ -1,4 +1,4 @@
-import { Box, Group, Paper, Stack, Text, createStyles } from "@mantine/core";
+import { Box, Paper, Text, createStyles } from "@mantine/core";
 import { CldImage } from "next-cloudinary";
 
 import { formatPrice } from "~/utils/client";
