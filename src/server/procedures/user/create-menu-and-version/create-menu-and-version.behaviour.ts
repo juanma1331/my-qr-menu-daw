@@ -55,7 +55,7 @@ export const findUser = async ({
 };
 
 export const generateQrContent = (id: string) =>
-  `${env.NEXTAUTH_URL}/menus/public/${id}`;
+  `https://my-qr-menu-daw.vercel.app/menus/public/${id}`;
 
 /**
  * Handles the generation and uploading of a QR code image.
