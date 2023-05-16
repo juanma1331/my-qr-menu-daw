@@ -15,8 +15,11 @@ const useStyles = createStyles((theme) => ({
     fontSize: theme.fontSizes.xl,
     color: theme.colors.cGray[0],
     fontFamily: josefinSans.style.fontFamily,
+    [theme.fn.largerThan("sm")]: {
+      fontSize: "2rem",
+    },
     [theme.fn.largerThan("md")]: {
-      fontSize: theme.fontSizes.lg,
+      fontSize: "3rem",
     },
   },
   subtitle: {
