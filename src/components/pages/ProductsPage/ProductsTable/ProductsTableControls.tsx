@@ -59,7 +59,7 @@ const ProductsTableControls: React.FC<ProductsTableControlsProps> = ({
         label="Búsqueda"
         value={searchQuery}
         onChange={(event) => setSearchQuery(event.currentTarget.value)}
-        w="50%"
+        maw="100%"
       />
     </Flex>
   );

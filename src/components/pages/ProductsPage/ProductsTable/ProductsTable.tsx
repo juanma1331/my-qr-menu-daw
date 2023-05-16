@@ -21,9 +21,14 @@ export type ProductsTableProps = {
   onEdit: (productId: number) => void;
 };
 
-const useStyles = createStyles((theme) => ({
+const useStyles = createStyles(() => ({
   scrollArea: {
     height: 410,
+  },
+  table: {
+    maxWidth: "80%",
+    marginLeft: "auto",
+    marginRight: "auto",
   },
 }));
 
@@ -113,20 +118,14 @@ const ProductsTable: React.FC<ProductsTableProps> = ({
       <Space h="xs" />
 
       <ScrollArea type="always" className={classes.scrollArea}>
-        <Table
-          sx={{
-            maxWidth: "80%",
-            marginLeft: "auto",
-            marginRight: "auto",
-          }}
-        >
+        <Table fontSize="xs" className={classes.table}>
           <thead>
             <tr>
               <th>Imagen</th>
               <th>Nombre</th>
               <th>Precio</th>
               <th>Sección</th>
-              <th>Acciones</th>
+              <th>Acc</th>
             </tr>
           </thead>
           <tbody>

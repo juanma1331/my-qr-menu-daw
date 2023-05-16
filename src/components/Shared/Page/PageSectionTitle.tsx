@@ -3,7 +3,10 @@ import { Title, createStyles, type TitleProps } from "@mantine/core";
 
 const useStyles = createStyles((theme) => ({
   root: {
-    fontSize: theme.fontSizes.lg,
+    fontSize: theme.fontSizes.md,
+    [theme.fn.largerThan("sm")]: {
+      fontSize: theme.fontSizes.xl,
+    },
   },
 }));
 

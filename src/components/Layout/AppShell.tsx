@@ -37,6 +37,7 @@ const AppShell: React.FC<PropsWithChildren<AppShellProps>> = ({
         /> */}
       </Head>
       <MAppShell
+        padding="xs"
         styles={{
           main: {
             background:

@@ -1,5 +1,5 @@
-import { Flex, createStyles } from "@mantine/core";
-import { IconPencil, IconTrash } from "@tabler/icons-react";
+import { Flex, MediaQuery, Menu, createStyles } from "@mantine/core";
+import { IconDots, IconPencil, IconTrash } from "@tabler/icons-react";
 import { CldImage } from "next-cloudinary";
 
 import type { RouterOutputs } from "~/utils/api";
@@ -44,15 +44,41 @@ const ProductsTableRow: React.FC<ProductsTableRowProps> = ({
       <td>{product.section.name}</td>
 
       <td>
-        <Flex align="center" justify="start" gap="md">
-          <ActionIcon onClick={() => onDelete(product.id)}>
-            <IconTrash size={16} />
-          </ActionIcon>
+        <MediaQuery smallerThan="md" styles={{ display: "none" }}>
+          <Flex align="center" justify="start" gap="md">
+            <ActionIcon onClick={() => onDelete(product.id)}>
+              <IconTrash size={16} />
+            </ActionIcon>
 
-          <ActionIcon onClick={() => onEdit(product.id)}>
-            <IconPencil size={16} />
-          </ActionIcon>
-        </Flex>
+            <ActionIcon onClick={() => onEdit(product.id)}>
+              <IconPencil size={16} />
+            </ActionIcon>
+          </Flex>
+        </MediaQuery>
+
+        <MediaQuery largerThan="md" styles={{ display: "none" }}>
+          <Menu shadow="md" width={200}>
+            <Menu.Target>
+              <IconDots size={16} />
+            </Menu.Target>
+
+            <Menu.Dropdown>
+              <Menu.Label>Acciones</Menu.Label>
+              <Menu.Item
+                icon={<IconTrash size={14} />}
+                onClick={() => onDelete(product.id)}
+              >
+                Eliminar
+              </Menu.Item>
+              <Menu.Item
+                icon={<IconPencil size={14} />}
+                onClick={() => onEdit(product.id)}
+              >
+                Editar
+              </Menu.Item>
+            </Menu.Dropdown>
+          </Menu>
+        </MediaQuery>
       </td>
     </tr>
   );
