@@ -15,7 +15,7 @@ const useStyles = createStyles(() => ({
     display: "flex",
     flexDirection: "column",
     justifyContent: "center",
-    gap: "8rem",
+    gap: "5rem",
   },
   login: {
     display: "flex",

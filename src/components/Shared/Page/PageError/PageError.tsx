@@ -1,7 +1,8 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { Button, Flex, Stack, Text } from "@mantine/core";
+import { Flex, Stack, Text } from "@mantine/core";
 
+import Button from "../../Button";
 import PageCenter from "../PageCenter";
 
 export type PageErrorProps = {
