@@ -33,7 +33,7 @@ const EditPropertiesImageField: React.FC<EditPropertiesImageFieldProps> = ({
 
   return (
     <Flex justify="space-between" align="start">
-      <Flex direction="column" gap="md">
+      <Flex direction="column" gap="xs">
         <Text size={14} weight={500}>
           Imagen
         </Text>
@@ -47,8 +47,8 @@ const EditPropertiesImageField: React.FC<EditPropertiesImageFieldProps> = ({
               }
               alt="La imagen del restaurante o local"
               height={174}
-              width={348}
-              sizes="348px"
+              width={260}
+              sizes="260px"
               effects={[
                 {
                   improve: true,
@@ -61,13 +61,13 @@ const EditPropertiesImageField: React.FC<EditPropertiesImageFieldProps> = ({
           ) : (
             <Flex
               justify="center"
-              align="end"
+              align="center"
               style={{
                 borderRadius: theme.radius.sm,
-                color: theme.colors.cGray[5],
+                color: theme.colors.cGray[4],
               }}
               h="174px"
-              w="348px"
+              w="260px"
               bg="cGray.1"
             >
               Sin imagen

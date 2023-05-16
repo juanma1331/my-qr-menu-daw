@@ -1,4 +1,4 @@
-import { Text } from "@mantine/core";
+import { MediaQuery, Text } from "@mantine/core";
 import { useSession } from "next-auth/react";
 
 const User: React.FC = () => {
@@ -8,9 +8,11 @@ const User: React.FC = () => {
     return null;
 
   return (
-    <Text color="cGray.3" size="xs">
-      {data.user.email}
-    </Text>
+    <MediaQuery smallerThan={"md"} styles={{ display: "none" }}>
+      <Text color="cGray.3" size="xs">
+        {data.user.email}
+      </Text>
+    </MediaQuery>
   );
 };
 
