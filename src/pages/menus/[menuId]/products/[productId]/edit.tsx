@@ -68,7 +68,7 @@ const EditProductPage: WithAuthentication<NextPageWithLayout> = ({}) => {
     image,
   }: EditProductFormValues) => {
     if (!productData) return;
-
+    console.log(image);
     const serializedImage = image ? await serializeFile(image) : null;
     const editedProduct = {
       ...product,

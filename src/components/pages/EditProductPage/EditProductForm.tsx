@@ -90,7 +90,7 @@ const EditProductForm: React.FC<EditProductFormProps> = ({
           clearable
           withAsterisk
           rightSection={<IconFileUpload size={18} color="gray" />}
-          {...form.getInputProps("product.image")}
+          {...form.getInputProps("image")}
         />
 
         <SelectInput
