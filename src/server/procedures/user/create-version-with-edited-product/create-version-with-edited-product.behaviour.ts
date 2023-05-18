@@ -95,17 +95,15 @@ export const prepareProductForCreation = ({
 };
 
 /**
- * Replaces a product in each section of an array of sections with a new product.
+ * Replaces a product in a section of prepared sections.
  *
- * @param {Object} ReplaceProductInSectionParams - An object containing the sections array and the newProduct object.
- * @param {Object[]} ReplaceProductInSectionParams.sections - An array of section objects.
- * @param {Object} ReplaceProductInSectionParams.newProduct - The new product object.
- * @param {string} ReplaceProductInSectionParams.newProduct.id - The ID of the new product.
- * @param {string} ReplaceProductInSectionParams.newProduct.name - The name of the new product.
- * @param {string} ReplaceProductInSectionParams.newProduct.description - The description of the new product.
- * @param {number} ReplaceProductInSectionParams.newProduct.price - The price of the new product.
- * @param {string} ReplaceProductInSectionParams.newProduct.imageId - The image ID of the new product.
- * @return {Object[]} An array of section objects with the new product replacing the old product.
+ * @param {object} params - The parameters object.
+ * @param {PreparedSection[]} params.sections - The array of sections to prepare.
+ * @param {Product} params.newProduct - The new product to replace the old one.
+ * @param {string} params.productSectionId - The ID of the section where the new product should be placed.
+ *
+ * @return {PreparedSection[]} - An array of prepared sections with the replaced product.
+ * @throws {TRPCError} - Throws a TRPCError with code 'BAD_REQUEST' and message 'Origin section not found' if origin product section ID is not found. Throws a TRPCError with code 'BAD_REQUEST' and message 'Original product not found' if original product is not found.
  */
 export const replaceProductInSection = ({
   sections,
