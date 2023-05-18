@@ -12,6 +12,7 @@ MyQRMenu es un sistema de gestión de menús digitales para restaurantes y bares
 - [Estructura del Proyecto](#estructura-del-proyecto)
 - [Funcionamiento](#funcionamiento)
 - [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Posibles Mejoras](#posibles-mejoras)
 - [Contacto](#contacto)
 
 ## Instalación
@@ -125,6 +126,17 @@ Además, se definen las interfaces principales de la aplicación en **src/server
 ## Importante
 
 Este proyecto solo tiene fines educativos.
+
+## Posibles Mejoras
+
+1. Se podría usar una arquitectura diferente para los esquemas ZOD de la aplicación.
+   Idea: Crear un esquema zod base para cada entidad y componer con ellas los esquemas necesarios para cada endpoint, formularios, etc.
+2. Se podría crear un Hook que acompañe a PublishButton con la finalidad de no tener que crear un estado para el error de publicación en cada componente Page.
+3. Se podría mejorar la lógica de actualización de la caché para las rutas. De este modo no tenemos que invalidar la caché para la ruta y mejoramos el consumo de ancho de banda.
+4. Se podría mejorar la tabla de productos. Añadir más opciones de filtrado o usar alguna librería para tablas (React Table).
+5. Se podrían aplicar diversas mejoras a la responsividad y accesibilida del sitio.
+6. Mejorar la configuración de las imagenes para una visualización más detallada de las imagenes.
+7. Se debería añadir un modal de confirmación para "despublicar" ya que al hacerlo el cliente no verá ningún menú publicado.
 
 ## Contacto
 
