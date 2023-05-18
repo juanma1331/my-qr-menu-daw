@@ -1,74 +1,131 @@
-# Create T3 App (extended)
+# MyQRMenu Desarrollo de Aplicaciones Web
 
-This is an extended version of the [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app` that includes:
+## Breve descripción
 
-- UI Components using [shadcn/ui](https://ui.shadcn.com) - which is built on top of [Radix UI](https://radix-ui.com) & [Tailwind CSS](https://tailwindcss.com)
-- Full-Stack CRUD example with tRPC mutations (protected routes) using the UI components together with [react-hook-form](https://react-hook-form.com).
-- E2E Testing using [Playwright](https://playwright.dev)
-- Integration tests using [Vitest](https://vitest.dev).
-- Docker Compose setup for local database
-- [`@next/font`] for optimized fonts
+MyQRMenu es un sistema de gestión de menús digitales para restaurantes y bares. Los usuarios pueden crear y editar menús accesibles a través de códigos QR autogenerados. Es posible modificar precios, añadir secciones y publicar cambios de acuerdo a las necesidades del usuario.
 
-[Try it out now!](https://t3-complete.vercel.app)
+## Índice
 
-## Getting Started
+- [Instalación](#instalación)
+- [Configuración de pruebas](#configuración-de-pruebas)
+- [Uso](#documentacion-de-uso)
+- [Estructura del Proyecto](#estructura-del-proyecto)
+- [Funcionamiento](#funcionamiento)
+- [Tecnologías Utilizadas](#tecnologías-utilizadas)
+- [Contacto](#contacto)
 
-1. Install deps
+## Instalación
 
-```bash
-pnpm install
+1. Asegúrate de tener instalado [pnpm](https://pnpm.io/installation).
+2. Instala las dependencias del proyecto con el comando `pnpm install`.
+3. Inicia la aplicación en modo desarrollo con el comando `pnpm dev`.
+
+## Configuración de pruebas
+
+**La aplicación hace uso de Docker para la base de datos de prueba. Asegúrate de tenerlo instalado y en funcionamiento antes de arrancar las pruebas**
+
+1. Ejecuta el comando de inicialización `pnpm run setup:test-db`.
+
+2. Ejecuta las pruebas `pnpm test`.
+
+## Uso
+
+Esta documentación describe cómo navegar y utilizar nuestra aplicación.
+
+### Autenticación de Usuarios
+
+Al llegar a la ruta raíz de la aplicación, se le presentará una pantalla de login.
+
+- Autenticación como "USER": Redirige a la ruta `/menus`.
+- Autenticación como "ADMIN": Redirige a la ruta `/admin`.
+
+#### Para Usuarios (Role: USER)
+
+**Ruta /menus**
+Muestra el listado de menús creados por el usuario. Aquí los usuarios pueden:
+
+1. Eliminar los menús.
+2. Descargar el código asignado al menú.
+3. Navegar a la ruta de edición del menú.
+
+**Edición del Menú**
+La edición del menú está subdivida en las siguientes subrutas:
+
+- **/menus/:menuId**: Permite editar el título, subtítulo o la imagen del menú.
+- **/menus/:menuId/sections**: Facilita la edición, adición, eliminación y cambio de posición de las secciones del menú.
+- **/menus/:menuId/products**: Muestra el listado de productos del menú y permite su eliminación, navegación a la ruta de creación de un nuevo producto y la ruta de edición de un producto existente.
+- **/menus/:menuId/products/:productId/edit**: Permite editar el nombre, descripción, precio, imagen y sección a la que pertenece el producto.
+- **/menus/:menuId/products/new**: Facilita la creación de un nuevo producto para el menú.
+
+#### Para Administradores (Role: ADMIN)
+
+**Ruta /admin**
+Muestra el listado de todos los usuarios y permite la edición del límite de creación de menús por usuario.
+
+## Estructura del Proyecto
+
+```
+.
+├── prisma/
+│   ├── schema.prisma
+│   ├── seed.ts
+│   └── images/
+├── public/
+├── scripts/
+└── src/
+    ├── pages/
+    ├── components/
+    ├── styles/
+    ├── utils/
+    └── server/
+        ├── api/
+        ├── procedures/
+        │   ├── admin/
+        │   └── users/
+        │       └── shared/
+        └── services/
+
 ```
 
-2. Start the db
+## Funcionamiento
 
-```bash
-docker compose up -d
-```
+### Código cliente
 
-3. Update env and push the schema to the db
+- **pages**: Cada archivo dentro de esta carpeta representa una ruta de la aplicación. Una carpeta especial llamada api define los endpoints RESTful API.
 
-```bash
-cp .env.example .env
-pnpm prisma db push
-```
+- **components**: Contiene todos los componentes React utilizados por las páginas.
 
-4. Start the dev server
+- **styles**: Contiene valores predefinidos para colores y fuentes.
 
-```bash
-pnpm dev
-```
+- **utils**: Contiene funciones de utilidad para el cliente.
 
-5. Run the tests
+### Código Servidor
 
-```bash
-pnpm test
-```
+- **server/api**: Contiene enrutadores tRPC que agrupan endpoints relacionados. Define también el contexto que será pasado a cada procedimiento tRPC a la hora de su ejecución.
 
----
+- **server/procedures**: Se subdividen los casos de uso del administrador y de los usuarios. Cada subcarpeta contiene la lógica necesaria para un caso de uso en particular con archivos de tipo: .schema, .procedure, .behaviour, .types, .unit, .integration.
 
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
+- **server/user/shared**: Contiene funciones que se reutilizan en los endpoints.
 
-## What's next? How do I make an app with this?
+- **server/services**: Contiene la definición para las dependencias que serán utilizadas en el contexto de cada procedimiento.
 
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
+Además, se definen las interfaces principales de la aplicación en **src/server/procedures/interfaces.ts**, la configuración para AuthJS en **src/server/procedures/auth.ts** y la configuración para Prisma en **src/server/procedures/db.ts.**
 
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
+## Tecnologías Utilizadas
 
-- [Next.js](https://nextjs.org)
-- [NextAuth.js](https://next-auth.js.org)
-- [Prisma](https://prisma.io)
-- [Tailwind CSS](https://tailwindcss.com)
-- [tRPC](https://trpc.io)
+- Typescript (https://www.typescriptlang.org/)
+- Next.js (https://nextjs.org/docs)
+- Mantine Dev (https://mantine.dev/)
+- Zod (https://zod.dev/)
+- tRPC con ReactQuery (https://trpc.io/docs)
+- Prisma ORM (https://www.prisma.io/docs)
+- Cloudinary (https://cloudinary.com/)
+- Vitest (https://vitest.dev/)
 
-## Learn More
+## Importante
 
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
+Este proyecto solo tiene fines educativos.
 
-- [Documentation](https://create.t3.gg/)
-- [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
+## Contacto
 
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
+email - juanma1331@gmail.com
