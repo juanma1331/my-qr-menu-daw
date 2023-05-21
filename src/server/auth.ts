@@ -54,7 +54,11 @@ export const authOptions: NextAuthOptions = {
     },
 
     signIn({ user }) {
-      const allowed = ["juanma131313@gmail.com", "juanma1331@gmail.com"];
+      const allowed = [
+        "juanma131313@gmail.com",
+        "juanma1331@gmail.com",
+        "rubia_159@hotmail.com",
+      ];
       if (user.email && allowed.includes(user.email)) {
         return true;
       }
@@ -104,7 +108,7 @@ async function addAdminRoleToUserOnFirstSignIn({
     isNewUser &&
     account &&
     account.provider === "discord" &&
-    user.email === "juanma1331@gmail.com";
+    user.email === "rubia_159@hotmail.com";
 
   if (isAdminLoginForFirstTime) {
     await prisma.user.update({
